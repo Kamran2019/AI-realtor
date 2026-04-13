@@ -123,6 +123,20 @@ This starts:
 - backend on `http://localhost:5000`
 - frontend on `http://localhost:5173`
 
+### Windows one-click dev scripts
+
+If you want the project to bring up its local Mongo helper, then the backend, then the frontend in order, use:
+
+```bat
+start-dev.cmd
+```
+
+To stop the managed dev stack later:
+
+```bat
+stop-dev.cmd
+```
+
 ### Option 2: Docker Compose
 
 ```bash
