@@ -36,6 +36,8 @@ a:hover {
 .site-header {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 24px;
   min-height: 64px;
   padding: 0 24px;
   border-bottom: 1px solid #dde3ea;
@@ -47,6 +49,12 @@ a:hover {
   font-size: 1rem;
 }
 
+.site-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
 .site-main {
   width: min(960px, calc(100% - 32px));
   margin: 0 auto;
@@ -54,7 +62,8 @@ a:hover {
 }
 
 .home-page,
-.not-found-page {
+.not-found-page,
+.auth-page {
   max-width: 680px;
 }
 
@@ -78,4 +87,85 @@ p {
   max-width: 56ch;
   color: #40515f;
   font-size: 1.1rem;
+}
+
+.auth-panel {
+  max-width: 440px;
+}
+
+.auth-panel h1 {
+  font-size: clamp(2rem, 8vw, 3.25rem);
+}
+
+.auth-form {
+  display: grid;
+  gap: 18px;
+  margin-top: 32px;
+}
+
+.field-group {
+  display: grid;
+  gap: 8px;
+}
+
+label {
+  color: #27323a;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+input {
+  width: 100%;
+  min-height: 48px;
+  padding: 10px 12px;
+  border: 1px solid #b8c4ce;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #172026;
+  font: inherit;
+}
+
+input:focus {
+  border-color: #0f6b8f;
+  outline: 3px solid rgba(15, 107, 143, 0.16);
+}
+
+input[aria-invalid="true"] {
+  border-color: #b42318;
+}
+
+.form-error,
+.form-success {
+  margin: 0;
+  font-size: 0.94rem;
+}
+
+.form-error {
+  color: #b42318;
+}
+
+.form-success {
+  color: #157347;
+  font-weight: 800;
+}
+
+.primary-button {
+  min-height: 48px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 6px;
+  background: #0f6b8f;
+  color: #ffffff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.primary-button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
+.primary-button:not(:disabled):hover {
+  background: #0a4e68;
 }
