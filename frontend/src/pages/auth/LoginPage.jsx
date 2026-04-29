@@ -1,20 +1,27 @@
 import { useState } from "react";
+import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import TextInput from "../../components/forms/TextInput.jsx";
 import FormError from "../../components/ui/FormError.jsx";
-import { signup } from "../../services/authApi.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 const initialFormValues = {
-  name: "",
   email: "",
   password: ""
 };
 
-const SignupPage = () => {
+const LoginPage = () => {
   const [formValues, setFormValues] = useState(initialFormValues);
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const { isAuthenticated, login } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const redirectTo = location.state?.from?.pathname || "/dashboard";
+
+  if (isAuthenticated) {
+    return <Navigate to={redirectTo} replace />;
+  }
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -28,7 +35,6 @@ const SignupPage = () => {
       [name]: ""
     }));
     setFormError("");
-    setSuccessMessage("");
   };
 
   const applyApiErrors = (error) => {
@@ -42,24 +48,18 @@ const SignupPage = () => {
     });
 
     setFieldErrors(nextFieldErrors);
-    setFormError(responseData?.message || "Signup failed. Please try again.");
+    setFormError(responseData?.message || "Login failed. Please try again.");
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setIsSubmitting(true);
     setFormError("");
-    setSuccessMessage("");
 
     try {
-      const response = await signup(formValues);
-
-      setFormValues(initialFormValues);
+      await login(formValues);
       setFieldErrors({});
-      setSuccessMessage(
-        response.data.message ||
-          "Account created successfully. Please check your email to verify your account."
-      );
+      navigate(redirectTo, { replace: true });
     } catch (error) {
       applyApiErrors(error);
     } finally {
@@ -68,24 +68,15 @@ const SignupPage = () => {
   };
 
   return (
-    <section className="auth-page" aria-labelledby="signup-title">
+    <section className="auth-page" aria-labelledby="login-title">
       <div className="auth-panel">
-        <p className="eyebrow">Create account</p>
-        <h1 id="signup-title">Sign up</h1>
+        <p className="eyebrow">Welcome back</p>
+        <h1 id="login-title">Log in</h1>
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
-          <TextInput
-            autoComplete="name"
-            error={fieldErrors.name}
-            id="signup-name"
-            label="Name"
-            name="name"
-            onChange={handleChange}
-            value={formValues.name}
-          />
           <TextInput
             autoComplete="email"
             error={fieldErrors.email}
-            id="signup-email"
+            id="login-email"
             label="Email"
             name="email"
             onChange={handleChange}
@@ -93,24 +84,29 @@ const SignupPage = () => {
             value={formValues.email}
           />
           <TextInput
-            autoComplete="new-password"
+            autoComplete="current-password"
             error={fieldErrors.password}
-            id="signup-password"
+            id="login-password"
             label="Password"
             name="password"
             onChange={handleChange}
             type="password"
             value={formValues.password}
           />
+          <div className="auth-form-link">
+            <Link to="/forgot-password">Forgot password?</Link>
+          </div>
           <FormError>{formError}</FormError>
-          {successMessage ? <p className="form-success">{successMessage}</p> : null}
           <button className="primary-button" disabled={isSubmitting} type="submit">
-            {isSubmitting ? "Creating account..." : "Create account"}
+            {isSubmitting ? "Logging in..." : "Log in"}
           </button>
         </form>
+        <p className="auth-switch">
+          New here? <Link to="/signup">Create an account</Link>
+        </p>
       </div>
     </section>
   );
 };
 
-export default SignupPage;
+export default LoginPage;

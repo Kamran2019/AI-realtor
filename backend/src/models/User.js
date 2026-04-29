@@ -69,6 +69,13 @@ const userSchema = new Schema(
         default: null
       }
     },
+    auth: {
+      refreshTokenHash: {
+        type: String,
+        default: null,
+        select: false
+      }
+    },
     authProviders: {
       google: {
         googleId: {
@@ -182,6 +189,10 @@ const userSchema = new Schema(
 
         if (ret.passwordReset) {
           delete ret.passwordReset.tokenHash;
+        }
+
+        if (ret.auth) {
+          delete ret.auth.refreshTokenHash;
         }
 
         if (ret.authProviders?.google) {

@@ -1,15 +1,14 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import TextInput from "../../components/forms/TextInput.jsx";
 import FormError from "../../components/ui/FormError.jsx";
-import { signup } from "../../services/authApi.js";
+import { forgotPassword } from "../../services/authApi.js";
 
 const initialFormValues = {
-  name: "",
-  email: "",
-  password: ""
+  email: ""
 };
 
-const SignupPage = () => {
+const ForgotPasswordPage = () => {
   const [formValues, setFormValues] = useState(initialFormValues);
   const [fieldErrors, setFieldErrors] = useState({});
   const [formError, setFormError] = useState("");
@@ -42,7 +41,7 @@ const SignupPage = () => {
     });
 
     setFieldErrors(nextFieldErrors);
-    setFormError(responseData?.message || "Signup failed. Please try again.");
+    setFormError(responseData?.message || "Reset request failed. Please try again.");
   };
 
   const handleSubmit = async (event) => {
@@ -52,13 +51,12 @@ const SignupPage = () => {
     setSuccessMessage("");
 
     try {
-      const response = await signup(formValues);
+      const response = await forgotPassword(formValues);
 
       setFormValues(initialFormValues);
       setFieldErrors({});
       setSuccessMessage(
-        response.data.message ||
-          "Account created successfully. Please check your email to verify your account."
+        response.data.message || "If an account exists, password reset instructions have been sent."
       );
     } catch (error) {
       applyApiErrors(error);
@@ -68,49 +66,33 @@ const SignupPage = () => {
   };
 
   return (
-    <section className="auth-page" aria-labelledby="signup-title">
+    <section className="auth-page" aria-labelledby="forgot-password-title">
       <div className="auth-panel">
-        <p className="eyebrow">Create account</p>
-        <h1 id="signup-title">Sign up</h1>
+        <p className="eyebrow">Account access</p>
+        <h1 id="forgot-password-title">Forgot password</h1>
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
-          <TextInput
-            autoComplete="name"
-            error={fieldErrors.name}
-            id="signup-name"
-            label="Name"
-            name="name"
-            onChange={handleChange}
-            value={formValues.name}
-          />
           <TextInput
             autoComplete="email"
             error={fieldErrors.email}
-            id="signup-email"
+            id="forgot-password-email"
             label="Email"
             name="email"
             onChange={handleChange}
             type="email"
             value={formValues.email}
           />
-          <TextInput
-            autoComplete="new-password"
-            error={fieldErrors.password}
-            id="signup-password"
-            label="Password"
-            name="password"
-            onChange={handleChange}
-            type="password"
-            value={formValues.password}
-          />
           <FormError>{formError}</FormError>
           {successMessage ? <p className="form-success">{successMessage}</p> : null}
           <button className="primary-button" disabled={isSubmitting} type="submit">
-            {isSubmitting ? "Creating account..." : "Create account"}
+            {isSubmitting ? "Sending..." : "Send reset link"}
           </button>
         </form>
+        <p className="auth-switch">
+          Remembered it? <Link to="/login">Log in</Link>
+        </p>
       </div>
     </section>
   );
 };
 
-export default SignupPage;
+export default ForgotPasswordPage;

@@ -31,4 +31,70 @@ const signupSchema = z
   })
   .strict("Unknown fields are not allowed");
 
-module.exports = { signupSchema };
+const loginSchema = z
+  .object({
+    email: z
+      .string({
+        required_error: "Email is required"
+      })
+      .trim()
+      .toLowerCase()
+      .email("Email must be valid"),
+    password: z
+      .string({
+        required_error: "Password is required"
+      })
+      .min(1, "Password is required")
+      .max(128, "Password must be at most 128 characters")
+  })
+  .strict("Unknown fields are not allowed");
+
+const emailSchema = z
+  .string({
+    required_error: "Email is required"
+  })
+  .trim()
+  .toLowerCase()
+  .email("Email must be valid");
+
+const tokenSchema = z
+  .string({
+    required_error: "Token is required"
+  })
+  .trim()
+  .min(1, "Token is required")
+  .max(256, "Token must be at most 256 characters");
+
+const resendVerificationSchema = z
+  .object({
+    email: emailSchema
+  })
+  .strict("Unknown fields are not allowed");
+
+const verifyEmailSchema = z
+  .object({
+    token: tokenSchema
+  })
+  .strict("Unknown fields are not allowed");
+
+const forgotPasswordSchema = z
+  .object({
+    email: emailSchema
+  })
+  .strict("Unknown fields are not allowed");
+
+const resetPasswordSchema = z
+  .object({
+    token: tokenSchema,
+    password: passwordSchema
+  })
+  .strict("Unknown fields are not allowed");
+
+module.exports = {
+  forgotPasswordSchema,
+  loginSchema,
+  resendVerificationSchema,
+  resetPasswordSchema,
+  signupSchema,
+  verifyEmailSchema
+};

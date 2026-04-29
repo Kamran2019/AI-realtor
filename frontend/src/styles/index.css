@@ -63,7 +63,8 @@ a:hover {
 
 .home-page,
 .not-found-page,
-.auth-page {
+.auth-page,
+.dashboard-page {
   max-width: 680px;
 }
 
@@ -168,4 +169,34 @@ input[aria-invalid="true"] {
 
 .primary-button:not(:disabled):hover {
   background: #0a4e68;
+}
+
+.nav-button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #0f6b8f;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.nav-button:hover {
+  color: #0a4e68;
+}
+
+.auth-switch,
+.route-status {
+  margin-top: 24px;
+}
+
+.auth-form-link {
+  margin-top: -8px;
+  font-size: 0.95rem;
+  text-align: right;
+}
+
+.dashboard-page .primary-button {
+  width: auto;
+  margin-top: 18px;
 }

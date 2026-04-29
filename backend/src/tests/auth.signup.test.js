@@ -45,7 +45,7 @@ describe("auth signup API", () => {
     expect(response.body).toEqual(
       expect.objectContaining({
         success: true,
-        message: "Account created successfully."
+        message: "Account created successfully. Please check your email to verify your account."
       })
     );
     expect(response.body.data.user.email).toBe(validSignup.email);
