@@ -12,6 +12,7 @@ import ResetPasswordPage from "../pages/auth/ResetPasswordPage.jsx";
 import SignupPage from "../pages/auth/SignupPage.jsx";
 import VerifyEmailPage from "../pages/auth/VerifyEmailPage.jsx";
 import BillingPage from "../pages/billing/BillingPage.jsx";
+import ScrapeSourcesPage from "../pages/scrape/ScrapeSourcesPage.jsx";
 
 const AppRoutes = () => (
   <Routes>
@@ -42,6 +43,14 @@ const AppRoutes = () => (
       element={
         <RoleRoute roles={["admin", "sub_admin"]}>
           <UsersPage />
+        </RoleRoute>
+      }
+    />
+    <Route
+      path="/scrape/sources"
+      element={
+        <RoleRoute roles={["admin", "sub_admin"]}>
+          <ScrapeSourcesPage />
         </RoleRoute>
       }
     />

@@ -9,6 +9,10 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
   PORT: z.coerce.number().int().positive(),
   MONGO_URI: z.string().trim().min(1),
+  MONGO_DNS_SERVERS: z.preprocess(
+    emptyStringToUndefined,
+    z.string().trim().min(1).optional()
+  ),
   CLIENT_URL: z.string().url(),
   APP_BASE_URL: z.string().url().optional(),
   JWT_ACCESS_SECRET: z.string().trim().min(32),

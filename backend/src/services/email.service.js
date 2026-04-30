@@ -2,6 +2,7 @@ const env = require("../config/env");
 const passwordResetEmail = require("../templates/emails/passwordResetEmail");
 const verificationEmail = require("../templates/emails/verificationEmail");
 const ApiError = require("../utils/ApiError");
+const logger = require("../utils/logger");
 
 const SAFE_EMAIL_ERROR = "Unable to send email right now. Please try again later.";
 const BREVO_SEND_EMAIL_URL = "https://api.brevo.com/v3/smtp/email";
@@ -18,6 +19,11 @@ const buildAppUrl = (path, token) => {
 
 const requireBrevoConfig = () => {
   if (!env.BREVO_API_KEY || !env.BREVO_SENDER_EMAIL) {
+    throw new ApiError(500, SAFE_EMAIL_ERROR);
+  }
+
+  if (env.BREVO_API_KEY.startsWith("xsmtpsib")) {
+    logger.error("BREVO_API_KEY is an SMTP key. Use a Brevo v3 API key for REST API email.");
     throw new ApiError(500, SAFE_EMAIL_ERROR);
   }
 };
@@ -47,7 +53,15 @@ const sendBrevoMail = async ({ to, subject, text, html }) => {
   });
 
   if (!response.ok) {
-    throw new Error("Brevo email request failed.");
+    const responseBody = await response.text();
+
+    logger.error("Brevo email request failed.", {
+      body: responseBody,
+      status: response.status,
+      statusText: response.statusText
+    });
+
+    throw new Error(`Brevo email request failed with status ${response.status}.`);
   }
 
   return response.json();
@@ -74,6 +88,7 @@ const sendMail = async ({ to, subject, text, html }) => {
   try {
     return await sendBrevoMail({ html, subject, text, to });
   } catch (error) {
+    logger.error(error.message);
     throw new ApiError(500, SAFE_EMAIL_ERROR);
   }
 };

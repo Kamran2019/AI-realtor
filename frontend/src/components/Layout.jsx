@@ -16,7 +16,12 @@ const Layout = ({ children }) => {
             <>
               <Link to="/dashboard">Dashboard</Link>
               <Link to="/billing">Billing</Link>
-              {canSeeAdminNav ? <Link to="/admin/users">Users</Link> : null}
+              {canSeeAdminNav ? (
+                <>
+                  <Link to="/scrape/sources">Scrape</Link>
+                  <Link to="/admin/users">Users</Link>
+                </>
+              ) : null}
               <button className="nav-button" onClick={logout} type="button">
                 Log out
               </button>
