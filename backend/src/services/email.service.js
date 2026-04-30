@@ -4,9 +4,9 @@ const verificationEmail = require("../templates/emails/verificationEmail");
 const ApiError = require("../utils/ApiError");
 
 const SAFE_EMAIL_ERROR = "Unable to send email right now. Please try again later.";
+const BREVO_SEND_EMAIL_URL = "https://api.brevo.com/v3/smtp/email";
 
 const testOutbox = [];
-let transporter = null;
 
 const buildAppUrl = (path, token) => {
   const url = new URL(path, env.APP_BASE_URL);
@@ -16,47 +16,48 @@ const buildAppUrl = (path, token) => {
   return url.toString();
 };
 
-const requireSmtpConfig = () => {
-  if (!env.SMTP_HOST || !env.SMTP_PORT || !env.SMTP_FROM) {
+const requireBrevoConfig = () => {
+  if (!env.BREVO_API_KEY || !env.BREVO_SENDER_EMAIL) {
     throw new ApiError(500, SAFE_EMAIL_ERROR);
   }
 };
 
-const getTransporter = () => {
-  if (transporter) {
-    return transporter;
-  }
+const buildSender = () => ({
+  email: env.BREVO_SENDER_EMAIL,
+  ...(env.BREVO_SENDER_NAME ? { name: env.BREVO_SENDER_NAME } : {})
+});
 
-  requireSmtpConfig();
+const sendBrevoMail = async ({ to, subject, text, html }) => {
+  requireBrevoConfig();
 
-  let nodemailer;
-
-  try {
-    nodemailer = require("nodemailer");
-  } catch (error) {
-    throw new ApiError(500, SAFE_EMAIL_ERROR);
-  }
-
-  transporter = nodemailer.createTransport({
-    host: env.SMTP_HOST,
-    port: env.SMTP_PORT,
-    secure: env.SMTP_SECURE,
-    ...(env.SMTP_USER && env.SMTP_PASS
-      ? {
-          auth: {
-            user: env.SMTP_USER,
-            pass: env.SMTP_PASS
-          }
-        }
-      : {})
+  const response = await fetch(BREVO_SEND_EMAIL_URL, {
+    body: JSON.stringify({
+      htmlContent: html,
+      sender: buildSender(),
+      subject,
+      textContent: text,
+      to: [{ email: to }]
+    }),
+    headers: {
+      accept: "application/json",
+      "api-key": env.BREVO_API_KEY,
+      "content-type": "application/json"
+    },
+    method: "POST"
   });
 
-  return transporter;
+  if (!response.ok) {
+    throw new Error("Brevo email request failed.");
+  }
+
+  return response.json();
 };
 
 const sendMail = async ({ to, subject, text, html }) => {
   const message = {
-    from: env.SMTP_FROM || "AI Realtor <no-reply@ai-realtor.local>",
+    from: env.BREVO_SENDER_EMAIL
+      ? `${env.BREVO_SENDER_NAME || "AI Realtor"} <${env.BREVO_SENDER_EMAIL}>`
+      : "AI Realtor <no-reply@ai-realtor.local>",
     to,
     subject,
     text,
@@ -71,7 +72,7 @@ const sendMail = async ({ to, subject, text, html }) => {
   }
 
   try {
-    return await getTransporter().sendMail(message);
+    return await sendBrevoMail({ html, subject, text, to });
   } catch (error) {
     throw new ApiError(500, SAFE_EMAIL_ERROR);
   }

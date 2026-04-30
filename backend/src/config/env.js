@@ -3,6 +3,8 @@ const { z } = require("zod");
 
 dotenv.config();
 
+const emptyStringToUndefined = (value) => (value === "" ? undefined : value);
+
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
   PORT: z.coerce.number().int().positive(),
@@ -16,15 +18,12 @@ const envSchema = z.object({
   COOKIE_SECURE: z
     .enum(["true", "false"])
     .transform((value) => value === "true"),
-  SMTP_HOST: z.string().trim().min(1).optional(),
-  SMTP_PORT: z.coerce.number().int().positive().optional(),
-  SMTP_SECURE: z
-    .enum(["true", "false"])
-    .default("false")
-    .transform((value) => value === "true"),
-  SMTP_USER: z.string().optional(),
-  SMTP_PASS: z.string().optional(),
-  SMTP_FROM: z.string().trim().min(1).optional(),
+  BREVO_API_KEY: z.preprocess(emptyStringToUndefined, z.string().trim().min(1).optional()),
+  BREVO_SENDER_EMAIL: z.preprocess(
+    emptyStringToUndefined,
+    z.string().trim().email().optional()
+  ),
+  BREVO_SENDER_NAME: z.preprocess(emptyStringToUndefined, z.string().trim().min(1).optional()),
   STRIPE_SECRET_KEY: z.string().trim().min(1).optional(),
   STRIPE_WEBHOOK_SECRET: z.string().trim().min(1).optional(),
   STRIPE_STARTER_MONTHLY_PRICE_ID: z.string().trim().min(1).optional(),
