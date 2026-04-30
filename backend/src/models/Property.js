@@ -158,6 +158,22 @@ const propertySchema = new Schema(
       trim: true,
       default: null
     },
+    status: {
+      type: String,
+      trim: true,
+      lowercase: true,
+      maxlength: 40,
+      default: "new",
+      index: true
+    },
+    tags: [
+      {
+        type: String,
+        trim: true,
+        lowercase: true,
+        maxlength: 50
+      }
+    ],
     history: [
       {
         eventType: {

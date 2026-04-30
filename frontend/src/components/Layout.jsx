@@ -15,6 +15,7 @@ const Layout = ({ children }) => {
           {isAuthenticated ? (
             <>
               <Link to="/dashboard">Dashboard</Link>
+              <Link to="/properties">Properties</Link>
               <Link to="/billing">Billing</Link>
               {canSeeAdminNav ? (
                 <>

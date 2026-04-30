@@ -12,6 +12,8 @@ import ResetPasswordPage from "../pages/auth/ResetPasswordPage.jsx";
 import SignupPage from "../pages/auth/SignupPage.jsx";
 import VerifyEmailPage from "../pages/auth/VerifyEmailPage.jsx";
 import BillingPage from "../pages/billing/BillingPage.jsx";
+import PropertyDetailPage from "../pages/properties/PropertyDetailPage.jsx";
+import PropertyListPage from "../pages/properties/PropertyListPage.jsx";
 import ScrapeSourcesPage from "../pages/scrape/ScrapeSourcesPage.jsx";
 
 const AppRoutes = () => (
@@ -35,6 +37,22 @@ const AppRoutes = () => (
       element={
         <ProtectedRoute>
           <BillingPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/properties"
+      element={
+        <ProtectedRoute>
+          <PropertyListPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/properties/:id"
+      element={
+        <ProtectedRoute>
+          <PropertyDetailPage />
         </ProtectedRoute>
       }
     />
