@@ -1,8 +1,11 @@
 import { Route, Routes } from "react-router-dom";
 import ProtectedRoute from "../components/routes/ProtectedRoute.jsx";
+import RoleRoute from "../components/routes/RoleRoute.jsx";
 import DashboardPage from "../pages/DashboardPage.jsx";
 import HomePage from "../pages/HomePage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
+import UserFormPage from "../pages/admin/UserFormPage.jsx";
+import UsersPage from "../pages/admin/UsersPage.jsx";
 import ForgotPasswordPage from "../pages/auth/ForgotPasswordPage.jsx";
 import LoginPage from "../pages/auth/LoginPage.jsx";
 import ResetPasswordPage from "../pages/auth/ResetPasswordPage.jsx";
@@ -23,6 +26,30 @@ const AppRoutes = () => (
         <ProtectedRoute>
           <DashboardPage />
         </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin/users"
+      element={
+        <RoleRoute roles={["admin", "sub_admin"]}>
+          <UsersPage />
+        </RoleRoute>
+      }
+    />
+    <Route
+      path="/admin/users/new"
+      element={
+        <RoleRoute roles={["admin"]}>
+          <UserFormPage />
+        </RoleRoute>
+      }
+    />
+    <Route
+      path="/admin/users/:id"
+      element={
+        <RoleRoute roles={["admin"]}>
+          <UserFormPage />
+        </RoleRoute>
       }
     />
     <Route path="*" element={<NotFoundPage />} />

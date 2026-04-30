@@ -2,7 +2,8 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
 
 const Layout = ({ children }) => {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
+  const canSeeAdminNav = ["admin", "sub_admin"].includes(user?.role);
 
   return (
     <div className="app-shell">
@@ -14,6 +15,7 @@ const Layout = ({ children }) => {
           {isAuthenticated ? (
             <>
               <Link to="/dashboard">Dashboard</Link>
+              {canSeeAdminNav ? <Link to="/admin/users">Users</Link> : null}
               <button className="nav-button" onClick={logout} type="button">
                 Log out
               </button>

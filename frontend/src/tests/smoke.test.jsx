@@ -15,6 +15,14 @@ vi.mock("../services/authApi.js", () => ({
   signup: vi.fn()
 }));
 
+vi.mock("../services/userApi.js", () => ({
+  createUser: vi.fn(),
+  getUser: vi.fn(),
+  listUsers: vi.fn(),
+  updateUser: vi.fn(),
+  updateUserStatus: vi.fn()
+}));
+
 const renderWithRoute = (initialEntry = "/") => {
   render(
     <MemoryRouter initialEntries={[initialEntry]}>
