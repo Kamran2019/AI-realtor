@@ -4,6 +4,7 @@ import {
   createScrapeSource,
   listScrapeRuns,
   listScrapeSources,
+  runScrapeSource,
   updateScrapeSource,
   updateScrapeSourceStatus
 } from "../../services/scrapeApi.js";
@@ -27,6 +28,7 @@ const ScrapeSourcesPage = () => {
   const [editingSourceId, setEditingSourceId] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [runningSourceIds, setRunningSourceIds] = useState([]);
   const [error, setError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
 
@@ -148,6 +150,32 @@ const ScrapeSourcesPage = () => {
     }
   };
 
+  const handleRunSource = async (source) => {
+    setError("");
+    setStatusMessage("");
+    setRunningSourceIds((currentIds) => [...currentIds, source.id]);
+
+    try {
+      const response = await runScrapeSource(source.id);
+      const finishedRun = response.data.data.run;
+      const [sourcesResponse, runsResponse] = await Promise.all([
+        listScrapeSources(queryParams),
+        listScrapeRuns({ limit: 5, page: 1 })
+      ]);
+
+      setSources(sourcesResponse.data.data.sources);
+      setPagination(sourcesResponse.data.data.pagination);
+      setRuns(runsResponse.data.data.runs);
+      setStatusMessage(
+        `Run ${finishedRun.status}: ${finishedRun.stats.created} created, ${finishedRun.stats.updated} updated.`
+      );
+    } catch (runError) {
+      setError(getErrorMessage(runError, "Scrape source could not be run."));
+    } finally {
+      setRunningSourceIds((currentIds) => currentIds.filter((id) => id !== source.id));
+    }
+  };
+
   const goToPage = (page) => {
     setPagination((currentPagination) => ({
       ...currentPagination,
@@ -265,6 +293,14 @@ const ScrapeSourcesPage = () => {
                       <td>{source.isEnabled ? "Enabled" : "Disabled"}</td>
                       <td>
                         <div className="table-actions">
+                          <button
+                            className="text-button"
+                            disabled={runningSourceIds.includes(source.id)}
+                            onClick={() => handleRunSource(source)}
+                            type="button"
+                          >
+                            {runningSourceIds.includes(source.id) ? "Running..." : "Run now"}
+                          </button>
                           <button className="text-button" onClick={() => startEditing(source)} type="button">
                             Edit
                           </button>
@@ -316,8 +352,17 @@ const ScrapeSourcesPage = () => {
               <ul>
                 {runs.map((run) => (
                   <li key={run.id}>
-                    <strong>{run.sourceKey}</strong>
-                    <span>{run.status}</span>
+                    <div>
+                      <strong>{run.sourceKey}</strong>
+                      <span className="table-subtext">
+                        {run.startedAt ? new Date(run.startedAt).toLocaleString() : "Queued"}
+                      </span>
+                    </div>
+                    <span className={`run-status ${run.status}`}>{run.status}</span>
+                    <span>
+                      {run.stats.created} created, {run.stats.updated} updated, {run.stats.skipped} skipped,{" "}
+                      {run.stats.failed} errors
+                    </span>
                   </li>
                 ))}
               </ul>

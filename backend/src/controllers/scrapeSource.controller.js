@@ -6,6 +6,7 @@ const {
   updateSourceStatusSchema
 } = require("../validators/scrapeSource.validator");
 const scrapeSourceService = require("../services/scrapeSource.service");
+const scraperRunnerService = require("../services/scraperRunner.service");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 const sendResponse = require("../utils/sendResponse");
@@ -102,10 +103,27 @@ const listRuns = asyncHandler(async (req, res) => {
   });
 });
 
+const runSource = asyncHandler(async (req, res) => {
+  const { id } = parseRequest(sourceIdParamsSchema, req.params);
+  const run = await scraperRunnerService.runSource({
+    ownerUserId: req.user._id,
+    sourceId: id
+  });
+
+  sendResponse(res, 200, {
+    success: true,
+    message: "Scrape run finished.",
+    data: {
+      run
+    }
+  });
+});
+
 module.exports = {
   createSource,
   listRuns,
   listSources,
+  runSource,
   updateSource,
   updateSourceStatus
 };

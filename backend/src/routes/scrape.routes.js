@@ -4,6 +4,7 @@ const {
   createSource,
   listRuns,
   listSources,
+  runSource,
   updateSource,
   updateSourceStatus
 } = require("../controllers/scrapeSource.controller");
@@ -17,6 +18,7 @@ router.use(requireRoles("admin", "sub_admin"));
 
 router.get("/sources", listSources);
 router.post("/sources", createSource);
+router.post("/sources/:id/run", runSource);
 router.patch("/sources/:id", updateSource);
 router.patch("/sources/:id/status", updateSourceStatus);
 router.get("/runs", listRuns);
