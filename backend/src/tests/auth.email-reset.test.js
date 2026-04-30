@@ -140,6 +140,28 @@ describe("auth email verification and password reset API", () => {
     expect(response.body.message).toBe("Invalid or expired verification token.");
   });
 
+  it("verify-email succeeds and clears stale tokens for already verified users", async () => {
+    const token = generateRawToken();
+    await createUser({
+      emailVerification: {
+        isVerified: true,
+        tokenHash: hashToken(token),
+        expiresAt: new Date(Date.now() + 24 * 60 * 60 * 1000),
+        verifiedAt: new Date()
+      }
+    });
+
+    const response = await request(app).post("/api/auth/verify-email").send({ token });
+    const user = await User.findOne({ email: validSignup.email }).select(
+      "+emailVerification.tokenHash"
+    );
+
+    expect(response.status).toBe(200);
+    expect(response.body.data.user.emailVerification.isVerified).toBe(true);
+    expect(user.emailVerification.tokenHash).toBeNull();
+    expect(user.emailVerification.expiresAt).toBeNull();
+  });
+
   it("forgot-password returns generic success for an unknown email", async () => {
     const response = await request(app)
       .post("/api/auth/forgot-password")

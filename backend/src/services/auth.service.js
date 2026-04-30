@@ -121,6 +121,10 @@ const verifyEmail = async ({ token }) => {
   }
 
   if (user.emailVerification?.isVerified) {
+    user.set("emailVerification.tokenHash", null);
+    user.set("emailVerification.expiresAt", null);
+    await user.save();
+
     return toSafeUser(user);
   }
 
