@@ -24,7 +24,15 @@ const envSchema = z.object({
     .transform((value) => value === "true"),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
-  SMTP_FROM: z.string().trim().min(1).optional()
+  SMTP_FROM: z.string().trim().min(1).optional(),
+  STRIPE_SECRET_KEY: z.string().trim().min(1).optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().trim().min(1).optional(),
+  STRIPE_STARTER_MONTHLY_PRICE_ID: z.string().trim().min(1).optional(),
+  STRIPE_STARTER_YEARLY_PRICE_ID: z.string().trim().min(1).optional(),
+  STRIPE_PRO_MONTHLY_PRICE_ID: z.string().trim().min(1).optional(),
+  STRIPE_PRO_YEARLY_PRICE_ID: z.string().trim().min(1).optional(),
+  STRIPE_ENTERPRISE_MONTHLY_PRICE_ID: z.string().trim().min(1).optional(),
+  STRIPE_ENTERPRISE_YEARLY_PRICE_ID: z.string().trim().min(1).optional()
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

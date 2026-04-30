@@ -11,6 +11,7 @@ import LoginPage from "../pages/auth/LoginPage.jsx";
 import ResetPasswordPage from "../pages/auth/ResetPasswordPage.jsx";
 import SignupPage from "../pages/auth/SignupPage.jsx";
 import VerifyEmailPage from "../pages/auth/VerifyEmailPage.jsx";
+import BillingPage from "../pages/billing/BillingPage.jsx";
 
 const AppRoutes = () => (
   <Routes>
@@ -25,6 +26,14 @@ const AppRoutes = () => (
       element={
         <ProtectedRoute>
           <DashboardPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/billing"
+      element={
+        <ProtectedRoute>
+          <BillingPage />
         </ProtectedRoute>
       }
     />

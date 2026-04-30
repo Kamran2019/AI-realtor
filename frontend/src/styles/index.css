@@ -222,6 +222,129 @@ input[aria-invalid="true"] {
   margin-top: 18px;
 }
 
+.billing-page {
+  max-width: 1080px;
+}
+
+.billing-page h1 {
+  font-size: clamp(2rem, 8vw, 3.25rem);
+}
+
+.billing-header,
+.billing-actions {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.billing-status {
+  display: grid;
+  min-width: 190px;
+  padding: 16px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #40515f;
+}
+
+.billing-status span,
+.billing-status small {
+  color: #60717f;
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.billing-status strong {
+  color: #172026;
+  font-size: 1.35rem;
+  text-transform: capitalize;
+}
+
+.billing-actions {
+  justify-content: flex-start;
+  margin: 28px 0 18px;
+}
+
+.interval-toggle {
+  display: inline-grid;
+  grid-template-columns: repeat(2, minmax(96px, 1fr));
+  overflow: hidden;
+  border: 1px solid #b8c4ce;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.interval-toggle button {
+  min-height: 40px;
+  border: 0;
+  background: transparent;
+  color: #40515f;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.interval-toggle button.active {
+  background: #172026;
+  color: #ffffff;
+}
+
+.plan-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.plan-card {
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  min-height: 430px;
+  padding: 20px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.plan-card h2 {
+  margin: 0;
+  color: #172026;
+  font-size: 1.35rem;
+}
+
+.plan-card p {
+  margin: 8px 0 0;
+  font-size: 0.98rem;
+}
+
+.plan-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  color: #60717f;
+}
+
+.plan-price strong {
+  color: #172026;
+  font-size: 2.1rem;
+}
+
+.plan-card ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0 0 0 18px;
+  color: #40515f;
+}
+
+.plan-card .primary-button,
+.plan-card .secondary-button {
+  width: 100%;
+  margin-top: auto;
+}
+
 .admin-page {
   max-width: 960px;
 }
@@ -362,12 +485,20 @@ input[aria-invalid="true"] {
   .site-header,
   .site-nav,
   .admin-page-header,
+  .billing-header,
+  .billing-actions,
   .pagination-bar {
     align-items: flex-start;
     flex-direction: column;
   }
 
-  .filter-bar {
+  .filter-bar,
+  .plan-grid {
     grid-template-columns: 1fr;
+  }
+
+  .billing-status,
+  .interval-toggle {
+    width: 100%;
   }
 }

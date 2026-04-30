@@ -15,6 +15,7 @@ const Layout = ({ children }) => {
           {isAuthenticated ? (
             <>
               <Link to="/dashboard">Dashboard</Link>
+              <Link to="/billing">Billing</Link>
               {canSeeAdminNav ? <Link to="/admin/users">Users</Link> : null}
               <button className="nav-button" onClick={logout} type="button">
                 Log out
