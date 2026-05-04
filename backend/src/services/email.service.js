@@ -119,6 +119,47 @@ const sendPasswordResetEmail = async ({ user, token }) => {
   });
 };
 
+const getPropertyAddress = (property) =>
+  [
+    property.address?.line1,
+    property.address?.city,
+    property.address?.postcode
+  ]
+    .filter(Boolean)
+    .join(", ") || "a property";
+
+const sendAlertNotificationEmail = async ({ alertRule, property, user }) => {
+  const propertyUrl = property._id
+    ? new URL(`/properties/${property._id.toString()}`, env.APP_BASE_URL).toString()
+    : env.APP_BASE_URL;
+  const address = getPropertyAddress(property);
+  const score =
+    property.scoring?.total === null || property.scoring?.total === undefined
+      ? "Unscored"
+      : property.scoring.total;
+  const subject = `AI Realtor alert: ${alertRule.name}`;
+  const text = [
+    `Hi ${user.name},`,
+    "",
+    `${address} matched your alert "${alertRule.name}".`,
+    `Score: ${score}`,
+    `View property: ${propertyUrl}`
+  ].join("\n");
+  const html = `
+    <p>Hi ${user.name},</p>
+    <p><strong>${address}</strong> matched your alert <strong>${alertRule.name}</strong>.</p>
+    <p>Score: ${score}</p>
+    <p><a href="${propertyUrl}">View property</a></p>
+  `;
+
+  return sendMail({
+    html,
+    subject,
+    text,
+    to: user.email
+  });
+};
+
 const getTestOutbox = () => testOutbox;
 
 const clearTestOutbox = () => {
@@ -128,6 +169,7 @@ const clearTestOutbox = () => {
 module.exports = {
   clearTestOutbox,
   getTestOutbox,
+  sendAlertNotificationEmail,
   sendPasswordResetEmail,
   sendVerificationEmail
 };

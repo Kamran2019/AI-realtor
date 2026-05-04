@@ -7,6 +7,7 @@ const plans = {
     name: "Free",
     limits: {
       activeListings: 3,
+      maxAlerts: 3,
       inspectionsPerMonth: 0,
       teamMembers: 1
     },
@@ -17,6 +18,7 @@ const plans = {
     name: "Starter",
     limits: {
       activeListings: 15,
+      maxAlerts: 10,
       inspectionsPerMonth: 25,
       teamMembers: 2
     },
@@ -30,6 +32,7 @@ const plans = {
     name: "Pro",
     limits: {
       activeListings: 100,
+      maxAlerts: 50,
       inspectionsPerMonth: 250,
       teamMembers: 10
     },
@@ -43,6 +46,7 @@ const plans = {
     name: "Enterprise",
     limits: {
       activeListings: null,
+      maxAlerts: null,
       inspectionsPerMonth: null,
       teamMembers: null
     },

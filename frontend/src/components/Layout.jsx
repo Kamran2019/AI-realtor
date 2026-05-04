@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext.jsx";
+import UnreadBadge from "./notifications/UnreadBadge.jsx";
 
 const Layout = ({ children }) => {
   const { isAuthenticated, logout, user } = useAuth();
@@ -16,6 +17,8 @@ const Layout = ({ children }) => {
             <>
               <Link to="/dashboard">Dashboard</Link>
               <Link to="/properties">Properties</Link>
+              <Link to="/alerts">Alerts</Link>
+              <UnreadBadge />
               <Link to="/billing">Billing</Link>
               {canSeeAdminNav ? (
                 <>

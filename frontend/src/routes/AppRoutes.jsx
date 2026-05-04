@@ -6,12 +6,14 @@ import HomePage from "../pages/HomePage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
 import UserFormPage from "../pages/admin/UserFormPage.jsx";
 import UsersPage from "../pages/admin/UsersPage.jsx";
+import AlertsPage from "../pages/alerts/AlertsPage.jsx";
 import ForgotPasswordPage from "../pages/auth/ForgotPasswordPage.jsx";
 import LoginPage from "../pages/auth/LoginPage.jsx";
 import ResetPasswordPage from "../pages/auth/ResetPasswordPage.jsx";
 import SignupPage from "../pages/auth/SignupPage.jsx";
 import VerifyEmailPage from "../pages/auth/VerifyEmailPage.jsx";
 import BillingPage from "../pages/billing/BillingPage.jsx";
+import NotificationsPage from "../pages/notifications/NotificationsPage.jsx";
 import PropertyDetailPage from "../pages/properties/PropertyDetailPage.jsx";
 import PropertyListPage from "../pages/properties/PropertyListPage.jsx";
 import ScrapeSourcesPage from "../pages/scrape/ScrapeSourcesPage.jsx";
@@ -33,10 +35,26 @@ const AppRoutes = () => (
       }
     />
     <Route
+      path="/alerts"
+      element={
+        <ProtectedRoute>
+          <AlertsPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
       path="/billing"
       element={
         <ProtectedRoute>
           <BillingPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/notifications"
+      element={
+        <ProtectedRoute>
+          <NotificationsPage />
         </ProtectedRoute>
       }
     />

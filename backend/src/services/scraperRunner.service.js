@@ -4,6 +4,7 @@ const Property = require("../models/Property");
 const ScrapeRun = require("../models/ScrapeRun");
 const ScrapeSource = require("../models/ScrapeSource");
 const { getAdapter } = require("../scrapers");
+const { matchPropertyAndNotify } = require("./alert.service");
 const { applyPropertyScore } = require("./dealScoring.service");
 const ApiError = require("../utils/ApiError");
 
@@ -230,6 +231,16 @@ const safelyApplyScore = (property) => {
   return true;
 };
 
+const safelyMatchAlerts = async (property) => {
+  try {
+    await matchPropertyAndNotify({ property });
+  } catch (error) {
+    return false;
+  }
+
+  return true;
+};
+
 const updateSourceHealth = async ({ errorMessage = null, source, status }) => {
   source.health.lastStatus = status;
   source.health.lastCheckedAt = new Date();
@@ -265,6 +276,7 @@ const processListing = async ({ rawListing, run, source, stats }) => {
     });
     safelyApplyScore(newProperty);
     await newProperty.save();
+    await safelyMatchAlerts(newProperty);
     stats.created += 1;
     return;
   }
@@ -294,6 +306,7 @@ const processListing = async ({ rawListing, run, source, stats }) => {
   });
   safelyApplyScore(property);
   await property.save();
+  await safelyMatchAlerts(property);
   stats.updated += 1;
 };
 
