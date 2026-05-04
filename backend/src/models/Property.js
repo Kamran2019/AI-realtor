@@ -138,6 +138,16 @@ const propertySchema = new Schema(
       maxlength: 80,
       default: null
     },
+    bedrooms: {
+      type: Number,
+      min: 0,
+      default: null
+    },
+    floorAreaSqFt: {
+      type: Number,
+      min: 0,
+      default: null
+    },
     images: [
       {
         url: {
@@ -209,6 +219,53 @@ const propertySchema = new Schema(
         type: Number,
         min: 0,
         max: 100,
+        default: null
+      },
+      arv: {
+        type: moneySchema,
+        default: () => ({})
+      },
+      rent: {
+        monthly: {
+          type: Number,
+          min: 0,
+          default: null
+        },
+        annual: {
+          type: Number,
+          min: 0,
+          default: null
+        },
+        currency: {
+          type: String,
+          trim: true,
+          uppercase: true,
+          maxlength: 3,
+          default: "GBP"
+        }
+      },
+      grossYield: {
+        type: Number,
+        min: 0,
+        default: null
+      },
+      roi: {
+        type: Number,
+        default: null
+      },
+      confidence: {
+        type: Number,
+        min: 0,
+        max: 100,
+        default: null
+      },
+      category: {
+        type: String,
+        enum: ["unknown", "high_potential", "solid", "watch", "risky"],
+        default: "unknown"
+      },
+      calculatedAt: {
+        type: Date,
         default: null
       },
       notes: {

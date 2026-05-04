@@ -4,6 +4,7 @@ const Property = require("../models/Property");
 const ScrapeRun = require("../models/ScrapeRun");
 const ScrapeSource = require("../models/ScrapeSource");
 const { getAdapter } = require("../scrapers");
+const { applyPropertyScore } = require("./dealScoring.service");
 const ApiError = require("../utils/ApiError");
 
 const runningSourceIds = new Set();
@@ -14,6 +15,12 @@ const optionalString = z
   .transform((value) => sanitizeText(value))
   .nullable()
   .optional();
+
+const nullableNumber = (numberSchema) =>
+  z.preprocess(
+    (value) => (value === "" || value === undefined ? null : value),
+    z.union([z.null(), numberSchema])
+  );
 
 const listingSchema = z
   .object({
@@ -54,6 +61,8 @@ const listingSchema = z
     auctionDate: z.coerce.date().nullable().optional(),
     type: optionalString,
     tenure: optionalString,
+    bedrooms: nullableNumber(z.coerce.number().int().nonnegative()).optional().default(null),
+    floorAreaSqFt: nullableNumber(z.coerce.number().finite().nonnegative()).optional().default(null),
     images: z
       .array(
         z.object({
@@ -88,6 +97,8 @@ const trackedFields = [
   "auctionDate",
   "type",
   "tenure",
+  "bedrooms",
+  "floorAreaSqFt",
   "images",
   "description",
   "legalPack.status",
@@ -163,6 +174,8 @@ const buildPropertyPayload = ({ listing, now, source }) => ({
   auctionDate: listing.auctionDate || null,
   type: listing.type || null,
   tenure: listing.tenure || null,
+  bedrooms: listing.bedrooms ?? null,
+  floorAreaSqFt: listing.floorAreaSqFt ?? null,
   images: listing.images,
   description: listing.description || null,
   legalPack: {
@@ -189,8 +202,15 @@ const collectChanges = (property, payload) =>
   }, []);
 
 const normalizeListing = (rawListing) => {
+  const floorArea = rawListing.floorArea;
+  const floorAreaSqFt =
+    rawListing.floorAreaSqFt ??
+    (typeof floorArea === "object" ? floorArea.sqFt ?? floorArea.squareFeet ?? null : floorArea) ??
+    (rawListing.floorAreaSqM ? Number(rawListing.floorAreaSqM) * 10.764 : null);
   const candidate = {
     ...rawListing,
+    bedrooms: rawListing.bedrooms ?? rawListing.beds ?? rawListing.bedroomCount ?? null,
+    floorAreaSqFt,
     price:
       rawListing.price && typeof rawListing.price === "object"
         ? rawListing.price.amount ?? null
@@ -198,6 +218,16 @@ const normalizeListing = (rawListing) => {
   };
 
   return listingSchema.parse(candidate);
+};
+
+const safelyApplyScore = (property) => {
+  try {
+    applyPropertyScore(property);
+  } catch (error) {
+    return false;
+  }
+
+  return true;
 };
 
 const updateSourceHealth = async ({ errorMessage = null, source, status }) => {
@@ -220,7 +250,7 @@ const processListing = async ({ rawListing, run, source, stats }) => {
   });
 
   if (!property) {
-    await Property.create({
+    const newProperty = new Property({
       ...payload,
       history: [
         {
@@ -233,6 +263,8 @@ const processListing = async ({ rawListing, run, source, stats }) => {
         }
       ]
     });
+    safelyApplyScore(newProperty);
+    await newProperty.save();
     stats.created += 1;
     return;
   }
@@ -241,6 +273,7 @@ const processListing = async ({ rawListing, run, source, stats }) => {
   property.set("source.scrapedAt", now);
 
   if (!changes.length) {
+    safelyApplyScore(property);
     await property.save();
     stats.skipped += 1;
     return;
@@ -259,6 +292,7 @@ const processListing = async ({ rawListing, run, source, stats }) => {
       changes
     }
   });
+  safelyApplyScore(property);
   await property.save();
   stats.updated += 1;
 };

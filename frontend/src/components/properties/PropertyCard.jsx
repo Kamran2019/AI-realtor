@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import BookmarkButton from "./BookmarkButton.jsx";
+import DealScoreBadge from "./DealScoreBadge.jsx";
 
 const formatMoney = (money) => {
   if (money?.amount === null || money?.amount === undefined) {
@@ -24,7 +26,12 @@ const formatDate = (value) => {
   }).format(new Date(value));
 };
 
-const PropertyCard = ({ property }) => {
+const formatCategory = (value) =>
+  (value || "TBC")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+const PropertyCard = ({ isBookmarked = false, onBookmarkChange, property }) => {
   const title = [property.address?.line1, property.address?.city]
     .filter(Boolean)
     .join(", ") || "Untitled property";
@@ -43,8 +50,9 @@ const PropertyCard = ({ property }) => {
             <span className="property-status">{property.status || "new"}</span>
             <h2>{title}</h2>
           </div>
-          <strong>{formatMoney(property.prices?.guide)}</strong>
+          <DealScoreBadge scoring={property.scoring} />
         </div>
+        <strong className="property-guide-price">{formatMoney(property.prices?.guide)}</strong>
         <dl className="property-facts">
           <div>
             <dt>Postcode</dt>
@@ -56,18 +64,25 @@ const PropertyCard = ({ property }) => {
           </div>
           <div>
             <dt>Score</dt>
-            <dd>{property.scoring?.total ?? "TBC"}</dd>
+            <dd>{formatCategory(property.scoring?.category)}</dd>
           </div>
           <div>
             <dt>Yield</dt>
-            <dd>{property.scoring?.yieldScore ?? "TBC"}</dd>
+            <dd>{property.scoring?.grossYield ? `${property.scoring.grossYield}%` : "TBC"}</dd>
           </div>
         </dl>
         <div className="property-card-footer">
           <span>
             {[property.type, property.tenure].filter(Boolean).join(" / ") || "Property details TBC"}
           </span>
-          <Link to={`/properties/${property.id}`}>View</Link>
+          <div className="property-card-actions">
+            <BookmarkButton
+              isBookmarked={isBookmarked}
+              onChange={onBookmarkChange}
+              propertyId={property.id}
+            />
+            <Link to={`/properties/${property.id}`}>View</Link>
+          </div>
         </div>
       </div>
     </article>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import PropertyCard from "../../components/properties/PropertyCard.jsx";
 import PropertyFilters from "../../components/properties/PropertyFilters.jsx";
 import FormError from "../../components/ui/FormError.jsx";
+import { listBookmarks } from "../../services/bookmarkApi.js";
 import { listProperties } from "../../services/propertyApi.js";
 
 const emptyFilters = {
@@ -31,10 +32,14 @@ const cleanParams = (params) =>
     return cleaned;
   }, {});
 
+const getBookmarkPropertyId = (bookmark) =>
+  typeof bookmark.propertyId === "string" ? bookmark.propertyId : bookmark.property?.id;
+
 const PropertyListPage = () => {
   const [filters, setFilters] = useState(emptyFilters);
   const [appliedFilters, setAppliedFilters] = useState(emptyFilters);
   const [properties, setProperties] = useState([]);
+  const [bookmarkedPropertyIds, setBookmarkedPropertyIds] = useState(new Set());
   const [pagination, setPagination] = useState({ page: 1, limit: 12, total: 0, totalPages: 1 });
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
@@ -57,11 +62,17 @@ const PropertyListPage = () => {
       setError("");
 
       try {
-        const response = await listProperties(queryParams);
+        const [propertiesResponse, bookmarksResponse] = await Promise.all([
+          listProperties(queryParams),
+          listBookmarks()
+        ]);
 
         if (isMounted) {
-          setProperties(response.data.data.properties);
-          setPagination(response.data.data.pagination);
+          setProperties(propertiesResponse.data.data.properties);
+          setPagination(propertiesResponse.data.data.pagination);
+          setBookmarkedPropertyIds(
+            new Set(bookmarksResponse.data.data.bookmarks.map(getBookmarkPropertyId).filter(Boolean))
+          );
         }
       } catch (loadError) {
         if (isMounted) {
@@ -106,6 +117,20 @@ const PropertyListPage = () => {
     }));
   };
 
+  const handleBookmarkChange = (propertyId, isBookmarked) => {
+    setBookmarkedPropertyIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+
+      if (isBookmarked) {
+        nextIds.add(propertyId);
+      } else {
+        nextIds.delete(propertyId);
+      }
+
+      return nextIds;
+    });
+  };
+
   return (
     <section className="properties-page" aria-labelledby="properties-title">
       <div className="admin-page-header">
@@ -135,7 +160,12 @@ const PropertyListPage = () => {
       ) : properties.length ? (
         <div className="property-grid">
           {properties.map((property) => (
-            <PropertyCard key={property.id} property={property} />
+            <PropertyCard
+              isBookmarked={bookmarkedPropertyIds.has(property.id)}
+              key={property.id}
+              onBookmarkChange={handleBookmarkChange}
+              property={property}
+            />
           ))}
         </div>
       ) : (

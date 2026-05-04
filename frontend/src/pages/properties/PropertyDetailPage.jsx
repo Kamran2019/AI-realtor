@@ -1,8 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import BookmarkButton from "../../components/properties/BookmarkButton.jsx";
+import DealScoreBadge from "../../components/properties/DealScoreBadge.jsx";
+import PropertyNotes from "../../components/properties/PropertyNotes.jsx";
 import FormError from "../../components/ui/FormError.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
-import { getProperty, updateProperty } from "../../services/propertyApi.js";
+import { listBookmarks } from "../../services/bookmarkApi.js";
+import { getProperty, recalculatePropertyScore, updateProperty } from "../../services/propertyApi.js";
 
 const getErrorMessage = (error, fallback) => error.response?.data?.message || fallback;
 
@@ -20,13 +24,28 @@ const formatMoney = (money) => {
 
 const formatDate = (value) => (value ? new Date(value).toLocaleDateString("en-GB") : "TBC");
 
+const formatNumber = (value) =>
+  value === null || value === undefined ? "TBC" : new Intl.NumberFormat("en-GB").format(value);
+
+const formatPercent = (value) => (value === null || value === undefined ? "TBC" : `${value}%`);
+
+const formatCategory = (value) =>
+  (value || "TBC")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+const getBookmarkPropertyId = (bookmark) =>
+  typeof bookmark.propertyId === "string" ? bookmark.propertyId : bookmark.property?.id;
+
 const PropertyDetailPage = () => {
   const { id } = useParams();
   const { user } = useAuth();
   const canEdit = ["admin", "sub_admin"].includes(user?.role);
   const [property, setProperty] = useState(null);
+  const [isBookmarked, setIsBookmarked] = useState(false);
   const [form, setForm] = useState({ description: "", status: "new", tags: "" });
   const [isLoading, setIsLoading] = useState(true);
+  const [isRecalculating, setIsRecalculating] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
@@ -39,11 +58,18 @@ const PropertyDetailPage = () => {
       setError("");
 
       try {
-        const response = await getProperty(id);
-        const nextProperty = response.data.data.property;
+        const [propertyResponse, bookmarksResponse] = await Promise.all([
+          getProperty(id),
+          listBookmarks()
+        ]);
+        const nextProperty = propertyResponse.data.data.property;
+        const bookmarkedIds = new Set(
+          bookmarksResponse.data.data.bookmarks.map(getBookmarkPropertyId).filter(Boolean)
+        );
 
         if (isMounted) {
           setProperty(nextProperty);
+          setIsBookmarked(bookmarkedIds.has(nextProperty.id));
           setForm({
             description: nextProperty.description || "",
             status: nextProperty.status || "new",
@@ -112,6 +138,29 @@ const PropertyDetailPage = () => {
     }
   };
 
+  const handleRecalculate = async () => {
+    setError("");
+    setStatusMessage("");
+    setIsRecalculating(true);
+
+    try {
+      const response = await recalculatePropertyScore(id);
+
+      setProperty(response.data.data.property);
+      setStatusMessage("Deal score recalculated.");
+    } catch (scoreError) {
+      setError(getErrorMessage(scoreError, "Deal score could not be recalculated."));
+    } finally {
+      setIsRecalculating(false);
+    }
+  };
+
+  const handleBookmarkChange = (propertyId, nextBookmarked) => {
+    if (propertyId === property?.id) {
+      setIsBookmarked(nextBookmarked);
+    }
+  };
+
   if (isLoading) {
     return <p className="route-status">Loading property...</p>;
   }
@@ -135,6 +184,11 @@ const PropertyDetailPage = () => {
           <p className="eyebrow">{property.status || "new"}</p>
           <h1 id="property-title">{title}</h1>
           <p>{property.description || "No description captured yet."}</p>
+          <BookmarkButton
+            isBookmarked={isBookmarked}
+            onChange={handleBookmarkChange}
+            propertyId={property.id}
+          />
         </div>
         {property.images?.[0]?.url ? (
           <img
@@ -151,6 +205,7 @@ const PropertyDetailPage = () => {
       <div className="property-detail-layout">
         <section className="property-detail-panel" aria-labelledby="summary-title">
           <h2 id="summary-title">Summary</h2>
+          <DealScoreBadge scoring={property.scoring} size="large" />
           <dl className="property-detail-list">
             <div>
               <dt>Guide price</dt>
@@ -198,6 +253,59 @@ const PropertyDetailPage = () => {
             </a>
           ) : null}
         </section>
+
+        <section className="property-detail-panel" aria-labelledby="scoring-title">
+          <div className="panel-title-row">
+            <h2 id="scoring-title">Deal scoring</h2>
+            {canEdit ? (
+              <button
+                className="secondary-button"
+                disabled={isRecalculating}
+                onClick={handleRecalculate}
+                type="button"
+              >
+                {isRecalculating ? "Recalculating..." : "Recalculate"}
+              </button>
+            ) : null}
+          </div>
+          <dl className="property-detail-list">
+            <div>
+              <dt>Category</dt>
+              <dd>{formatCategory(property.scoring?.category)}</dd>
+            </div>
+            <div>
+              <dt>Confidence</dt>
+              <dd>{formatPercent(property.scoring?.confidence)}</dd>
+            </div>
+            <div>
+              <dt>ARV</dt>
+              <dd>{formatMoney(property.scoring?.arv)}</dd>
+            </div>
+            <div>
+              <dt>Rent</dt>
+              <dd>{formatMoney({ amount: property.scoring?.rent?.monthly, currency: property.scoring?.rent?.currency })}/mo</dd>
+            </div>
+            <div>
+              <dt>Annual rent</dt>
+              <dd>{formatMoney({ amount: property.scoring?.rent?.annual, currency: property.scoring?.rent?.currency })}</dd>
+            </div>
+            <div>
+              <dt>Gross yield</dt>
+              <dd>{formatPercent(property.scoring?.grossYield)}</dd>
+            </div>
+            <div>
+              <dt>ROI</dt>
+              <dd>{formatPercent(property.scoring?.roi)}</dd>
+            </div>
+            <div>
+              <dt>Risk score</dt>
+              <dd>{formatNumber(property.scoring?.riskScore)}</dd>
+            </div>
+          </dl>
+          {property.scoring?.notes ? <p className="muted-note">{property.scoring.notes}</p> : null}
+        </section>
+
+        <PropertyNotes currentUser={user} propertyId={property.id} />
 
         {canEdit ? (
           <form className="property-edit-panel" onSubmit={handleSubmit}>

@@ -182,6 +182,12 @@ input[aria-invalid="true"] {
   color: #b42318;
 }
 
+.inline-error {
+  color: #b42318;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
 .form-success {
   color: #157347;
   font-weight: 800;
@@ -702,6 +708,69 @@ input[aria-invalid="true"] {
   white-space: nowrap;
 }
 
+.property-guide-price {
+  color: #172026;
+}
+
+.deal-score-badge {
+  display: inline-grid;
+  min-width: 76px;
+  justify-items: center;
+  gap: 2px;
+  padding: 7px 10px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  background: #eef2f5;
+  color: #27323a;
+  text-align: center;
+}
+
+.deal-score-badge strong {
+  color: inherit;
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.deal-score-badge span {
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.deal-score-badge.large {
+  width: fit-content;
+  min-width: 104px;
+  padding: 10px 12px;
+}
+
+.deal-score-badge.large strong {
+  font-size: 1.8rem;
+}
+
+.deal-score-badge.high_potential {
+  border-color: #78c29a;
+  background: #e8f6ee;
+  color: #13653f;
+}
+
+.deal-score-badge.solid {
+  border-color: #8bb8d4;
+  background: #e9f4fa;
+  color: #135b7a;
+}
+
+.deal-score-badge.watch {
+  border-color: #e2bf6d;
+  background: #fff6df;
+  color: #7a5a08;
+}
+
+.deal-score-badge.risky {
+  border-color: #ee9b92;
+  background: #fff0ee;
+  color: #9f2d20;
+}
+
 .property-status {
   color: #60717f;
   font-size: 0.78rem;
@@ -743,8 +812,54 @@ input[aria-invalid="true"] {
 
 .property-card-footer {
   align-items: center;
+  flex-wrap: wrap;
   color: #60717f;
   font-size: 0.94rem;
+}
+
+.property-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  white-space: nowrap;
+}
+
+.bookmark-control {
+  display: inline-grid;
+  gap: 4px;
+}
+
+.bookmark-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: 1px solid #b8c4ce;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #40515f;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+}
+
+.bookmark-button span[aria-hidden="true"] {
+  color: #9f6b00;
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.bookmark-button.active {
+  border-color: #e2bf6d;
+  background: #fff6df;
+  color: #7a5a08;
+}
+
+.bookmark-button:disabled {
+  cursor: wait;
+  opacity: 0.68;
 }
 
 .property-detail-header {
@@ -784,6 +899,18 @@ input[aria-invalid="true"] {
   font-size: 1.2rem;
 }
 
+.panel-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.muted-note {
+  margin: 0;
+  color: #60717f;
+}
+
 .property-detail-list {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
@@ -801,6 +928,68 @@ input[aria-invalid="true"] {
   color: #40515f;
   font-size: 0.86rem;
   font-weight: 800;
+}
+
+.property-notes-panel {
+  align-content: start;
+}
+
+.note-form,
+.note-edit {
+  display: grid;
+  gap: 12px;
+}
+
+.note-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.note-form .primary-button {
+  justify-self: start;
+}
+
+.notes-list {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.notes-list li {
+  display: grid;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid #dde3ea;
+}
+
+.notes-list p {
+  margin: 0;
+  color: #27323a;
+  font-size: 0.98rem;
+  white-space: pre-wrap;
+}
+
+.note-meta,
+.note-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.note-meta {
+  justify-content: space-between;
+}
+
+.note-meta strong {
+  color: #172026;
+}
+
+.note-meta span {
+  color: #60717f;
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 @media (max-width: 760px) {
