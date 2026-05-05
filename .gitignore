@@ -1,6 +1,8 @@
 node_modules/
 dist/
 coverage/
+backend/.cache/
+backend/uploads/
 .env
 .env.local
 .env.*.local

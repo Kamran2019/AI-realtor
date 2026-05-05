@@ -300,9 +300,54 @@ const propertySchema = new Schema(
         enum: ["missing", "pending", "available", "reviewed"],
         default: "missing"
       },
+      sourceType: {
+        type: String,
+        enum: ["upload", "url", null],
+        default: null
+      },
       url: {
         type: String,
         trim: true,
+        default: null
+      },
+      key: {
+        type: String,
+        trim: true,
+        default: null
+      },
+      checksum: {
+        type: String,
+        trim: true,
+        default: null
+      },
+      originalName: {
+        type: String,
+        trim: true,
+        maxlength: 180,
+        default: null
+      },
+      mimeType: {
+        type: String,
+        trim: true,
+        maxlength: 120,
+        default: null
+      },
+      sizeBytes: {
+        type: Number,
+        min: 0,
+        default: null
+      },
+      parsedAt: {
+        type: Date,
+        default: null
+      },
+      uploadedAt: {
+        type: Date,
+        default: null
+      },
+      parsedCharacterCount: {
+        type: Number,
+        min: 0,
         default: null
       },
       reviewedAt: {

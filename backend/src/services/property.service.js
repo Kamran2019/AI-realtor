@@ -118,6 +118,14 @@ const listProperties = async (query) => {
   };
 };
 
+const listPropertiesForExport = async (query) => {
+  const filter = buildPropertyFilter(query);
+  const sortPath = sortPathMap[query.sortBy];
+  const sortDirection = query.sortOrder === "asc" ? 1 : -1;
+
+  return Property.find(filter).sort({ [sortPath]: sortDirection, _id: sortDirection });
+};
+
 const findOwnedProperty = async ({ id, ownerUserId }) => {
   const property = await Property.findOne({ _id: id, ownerUserId });
 
@@ -163,7 +171,9 @@ const updateProperty = async ({ id, ownerUserId, updates }) => {
 };
 
 module.exports = {
+  buildPropertyFilter,
   getProperty,
+  listPropertiesForExport,
   listProperties,
   updateProperty
 };

@@ -9,6 +9,7 @@ const plans = {
       activeListings: 3,
       maxAlerts: 3,
       inspectionsPerMonth: 0,
+      reportsPerMonth: 3,
       teamMembers: 1
     },
     stripePrices: {}
@@ -20,6 +21,7 @@ const plans = {
       activeListings: 15,
       maxAlerts: 10,
       inspectionsPerMonth: 25,
+      reportsPerMonth: 25,
       teamMembers: 2
     },
     stripePrices: {
@@ -34,6 +36,7 @@ const plans = {
       activeListings: 100,
       maxAlerts: 50,
       inspectionsPerMonth: 250,
+      reportsPerMonth: 250,
       teamMembers: 10
     },
     stripePrices: {
@@ -48,6 +51,7 @@ const plans = {
       activeListings: null,
       maxAlerts: null,
       inspectionsPerMonth: null,
+      reportsPerMonth: null,
       teamMembers: null
     },
     stripePrices: {

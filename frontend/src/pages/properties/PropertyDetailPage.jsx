@@ -2,7 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import BookmarkButton from "../../components/properties/BookmarkButton.jsx";
 import DealScoreBadge from "../../components/properties/DealScoreBadge.jsx";
+import LegalPackPanel from "../../components/properties/LegalPackPanel.jsx";
 import PropertyNotes from "../../components/properties/PropertyNotes.jsx";
+import PropertyReportActions from "../../components/properties/PropertyReportActions.jsx";
 import FormError from "../../components/ui/FormError.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { listBookmarks } from "../../services/bookmarkApi.js";
@@ -252,6 +254,7 @@ const PropertyDetailPage = () => {
               Source listing
             </a>
           ) : null}
+          <PropertyReportActions propertyId={property.id} />
         </section>
 
         <section className="property-detail-panel" aria-labelledby="scoring-title">
@@ -304,6 +307,12 @@ const PropertyDetailPage = () => {
           </dl>
           {property.scoring?.notes ? <p className="muted-note">{property.scoring.notes}</p> : null}
         </section>
+
+        <LegalPackPanel
+          canEdit={canEdit}
+          onPropertyUpdated={setProperty}
+          property={property}
+        />
 
         <PropertyNotes currentUser={user} propertyId={property.id} />
 

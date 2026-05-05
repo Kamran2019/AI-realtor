@@ -16,6 +16,7 @@ import BillingPage from "../pages/billing/BillingPage.jsx";
 import NotificationsPage from "../pages/notifications/NotificationsPage.jsx";
 import PropertyDetailPage from "../pages/properties/PropertyDetailPage.jsx";
 import PropertyListPage from "../pages/properties/PropertyListPage.jsx";
+import ReportsPage from "../pages/reports/ReportsPage.jsx";
 import ScrapeSourcesPage from "../pages/scrape/ScrapeSourcesPage.jsx";
 
 const AppRoutes = () => (
@@ -55,6 +56,14 @@ const AppRoutes = () => (
       element={
         <ProtectedRoute>
           <NotificationsPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/reports"
+      element={
+        <ProtectedRoute>
+          <ReportsPage />
         </ProtectedRoute>
       }
     />

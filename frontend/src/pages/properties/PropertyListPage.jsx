@@ -4,6 +4,7 @@ import PropertyFilters from "../../components/properties/PropertyFilters.jsx";
 import FormError from "../../components/ui/FormError.jsx";
 import { listBookmarks } from "../../services/bookmarkApi.js";
 import { listProperties } from "../../services/propertyApi.js";
+import { exportPropertiesCsv } from "../../services/reportApi.js";
 
 const emptyFilters = {
   auctionDateFrom: "",
@@ -35,6 +36,19 @@ const cleanParams = (params) =>
 const getBookmarkPropertyId = (bookmark) =>
   typeof bookmark.propertyId === "string" ? bookmark.propertyId : bookmark.property?.id;
 
+const saveCsvBlob = (blobData) => {
+  const blob = blobData instanceof Blob ? blobData : new Blob([blobData], { type: "text/csv" });
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "properties-export.csv";
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
+
 const PropertyListPage = () => {
   const [filters, setFilters] = useState(emptyFilters);
   const [appliedFilters, setAppliedFilters] = useState(emptyFilters);
@@ -42,6 +56,7 @@ const PropertyListPage = () => {
   const [bookmarkedPropertyIds, setBookmarkedPropertyIds] = useState(new Set());
   const [pagination, setPagination] = useState({ page: 1, limit: 12, total: 0, totalPages: 1 });
   const [isLoading, setIsLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState("");
 
   const queryParams = useMemo(
@@ -131,6 +146,21 @@ const PropertyListPage = () => {
     });
   };
 
+  const handleCsvExport = async () => {
+    setError("");
+    setIsExporting(true);
+
+    try {
+      const response = await exportPropertiesCsv(cleanParams(appliedFilters));
+
+      saveCsvBlob(response.data);
+    } catch (exportError) {
+      setError(getErrorMessage(exportError, "CSV export could not be downloaded."));
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   return (
     <section className="properties-page" aria-labelledby="properties-title">
       <div className="admin-page-header">
@@ -139,6 +169,9 @@ const PropertyListPage = () => {
           <h1 id="properties-title">Auction listings</h1>
           <p>Browse scraped properties by location, price, scoring, and auction timing.</p>
         </div>
+        <button className="secondary-button" disabled={isExporting} onClick={handleCsvExport} type="button">
+          {isExporting ? "Exporting..." : "Export CSV"}
+        </button>
       </div>
 
       <PropertyFilters

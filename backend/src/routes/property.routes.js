@@ -1,6 +1,9 @@
 const express = require("express");
 
 const {
+  exportPropertyCsv
+} = require("../controllers/report.controller");
+const {
   getProperty,
   listProperties,
   updateProperty
@@ -13,6 +16,7 @@ const router = express.Router();
 router.use(authenticate);
 
 router.get("/", listProperties);
+router.get("/export.csv", exportPropertyCsv);
 router.get("/:id", getProperty);
 router.patch("/:id", requireRoles("admin", "sub_admin"), updateProperty);
 
