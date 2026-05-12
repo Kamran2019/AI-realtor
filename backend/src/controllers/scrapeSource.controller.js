@@ -7,6 +7,7 @@ const {
 } = require("../validators/scrapeSource.validator");
 const scrapeSourceService = require("../services/scrapeSource.service");
 const scraperRunnerService = require("../services/scraperRunner.service");
+const { recordAuditForRequest } = require("../services/auditLog.service");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 const sendResponse = require("../utils/sendResponse");
@@ -41,10 +42,18 @@ const listSources = asyncHandler(async (req, res) => {
 });
 
 const createSource = asyncHandler(async (req, res) => {
-  const source = await scrapeSourceService.createSource(
-    req.user._id,
-    parseRequest(createSourceSchema, req.body)
-  );
+  const payload = parseRequest(createSourceSchema, req.body);
+  const source = await scrapeSourceService.createSource(req.user._id, payload);
+  await recordAuditForRequest(req, {
+    action: "scrape_source_created",
+    entityType: "scrape_source",
+    entityId: source.id,
+    status: "success",
+    meta: {
+      key: source.key,
+      name: source.name
+    }
+  });
 
   sendResponse(res, 201, {
     success: true,
@@ -57,10 +66,18 @@ const createSource = asyncHandler(async (req, res) => {
 
 const updateSource = asyncHandler(async (req, res) => {
   const { id } = parseRequest(sourceIdParamsSchema, req.params);
+  const updates = parseRequest(updateSourceSchema, req.body);
   const source = await scrapeSourceService.updateSource({
     id,
     ownerUserId: req.user._id,
-    updates: parseRequest(updateSourceSchema, req.body)
+    updates
+  });
+  await recordAuditForRequest(req, {
+    action: "scrape_source_updated",
+    entityType: "scrape_source",
+    entityId: source.id,
+    status: "success",
+    meta: updates
   });
 
   sendResponse(res, 200, {
@@ -79,6 +96,15 @@ const updateSourceStatus = asyncHandler(async (req, res) => {
     id,
     isEnabled,
     ownerUserId: req.user._id
+  });
+  await recordAuditForRequest(req, {
+    action: "scrape_source_status_updated",
+    entityType: "scrape_source",
+    entityId: source.id,
+    status: "success",
+    meta: {
+      isEnabled
+    }
   });
 
   sendResponse(res, 200, {
@@ -108,6 +134,16 @@ const runSource = asyncHandler(async (req, res) => {
   const run = await scraperRunnerService.runSource({
     ownerUserId: req.user._id,
     sourceId: id
+  });
+  await recordAuditForRequest(req, {
+    action: run.status === "completed" ? "inspection_completed" : "inspection_failed",
+    entityType: "scrape_run",
+    entityId: run.id,
+    status: run.status === "completed" ? "success" : "failure",
+    meta: {
+      sourceId: id,
+      stats: run.stats
+    }
   });
 
   sendResponse(res, 200, {

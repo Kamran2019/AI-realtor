@@ -3,6 +3,7 @@ const { z } = require("zod");
 const env = require("../config/env");
 const { BILLING_INTERVALS, PLAN_KEYS } = require("../config/plans");
 const billingService = require("../services/billing.service");
+const { recordAuditForRequest } = require("../services/auditLog.service");
 const stripeService = require("../services/stripe.service");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
@@ -34,10 +35,18 @@ const parseBody = (schema, body) => {
 };
 
 const createCheckout = asyncHandler(async (req, res) => {
+  const payload = parseBody(checkoutSchema, req.body);
   const checkout = await billingService.createCheckout({
-    ...parseBody(checkoutSchema, req.body),
+    ...payload,
     appBaseUrl: env.APP_BASE_URL,
     userId: req.user._id
+  });
+  await recordAuditForRequest(req, {
+    action: "billing_checkout_started",
+    entityType: "billing",
+    entityId: req.user._id.toString(),
+    status: "success",
+    meta: payload
   });
 
   sendResponse(res, 200, {

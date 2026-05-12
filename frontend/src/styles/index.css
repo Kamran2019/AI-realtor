@@ -531,6 +531,35 @@ input[aria-invalid="true"] {
   max-width: 440px;
 }
 
+.admin-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.metric-card {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.metric-card h2 {
+  margin: 0;
+  color: #60717f;
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.metric-card strong {
+  color: #172026;
+  font-size: 1.5rem;
+}
+
 .scrape-page {
   max-width: 1120px;
 }
@@ -1236,7 +1265,8 @@ input[aria-invalid="true"] {
   .property-grid,
   .scrape-layout,
   .runs-panel li,
-  .plan-grid {
+  .plan-grid,
+  .admin-metric-grid {
     grid-template-columns: 1fr;
   }
 

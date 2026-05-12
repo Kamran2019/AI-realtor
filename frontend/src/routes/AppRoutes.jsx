@@ -6,6 +6,8 @@ import HomePage from "../pages/HomePage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
 import UserFormPage from "../pages/admin/UserFormPage.jsx";
 import UsersPage from "../pages/admin/UsersPage.jsx";
+import AdminDashboardPage from "../pages/admin/AdminDashboardPage.jsx";
+import AuditLogsPage from "../pages/admin/AuditLogsPage.jsx";
 import AlertsPage from "../pages/alerts/AlertsPage.jsx";
 import ForgotPasswordPage from "../pages/auth/ForgotPasswordPage.jsx";
 import LoginPage from "../pages/auth/LoginPage.jsx";
@@ -81,6 +83,22 @@ const AppRoutes = () => (
         <ProtectedRoute>
           <PropertyDetailPage />
         </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/admin"
+      element={
+        <RoleRoute roles={["admin", "sub_admin"]}>
+          <AdminDashboardPage />
+        </RoleRoute>
+      }
+    />
+    <Route
+      path="/admin/audit-logs"
+      element={
+        <RoleRoute roles={["admin"]}>
+          <AuditLogsPage />
+        </RoleRoute>
       }
     />
     <Route

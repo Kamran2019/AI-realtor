@@ -23,8 +23,10 @@ const Layout = ({ children }) => {
               <Link to="/billing">Billing</Link>
               {canSeeAdminNav ? (
                 <>
+                  <Link to="/admin">Admin</Link>
                   <Link to="/scrape/sources">Scrape</Link>
                   <Link to="/admin/users">Users</Link>
+                  {user?.role === "admin" ? <Link to="/admin/audit-logs">Audit Logs</Link> : null}
                 </>
               ) : null}
               <button className="nav-button" onClick={logout} type="button">

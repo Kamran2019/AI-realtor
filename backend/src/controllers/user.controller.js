@@ -6,6 +6,7 @@ const {
   userIdParamsSchema
 } = require("../validators/user.validator");
 const userService = require("../services/user.service");
+const { recordAuditForRequest } = require("../services/auditLog.service");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 const sendResponse = require("../utils/sendResponse");
@@ -50,7 +51,18 @@ const getUser = asyncHandler(async (req, res) => {
 });
 
 const createUser = asyncHandler(async (req, res) => {
-  const user = await userService.createUser(parseRequest(createUserSchema, req.body));
+  const body = parseRequest(createUserSchema, req.body);
+  const user = await userService.createUser(body);
+  await recordAuditForRequest(req, {
+    action: "user_created",
+    entityType: "user",
+    entityId: user.id,
+    status: "success",
+    meta: {
+      createdRole: user.role,
+      email: user.email
+    }
+  });
 
   sendResponse(res, 201, {
     success: true,
@@ -63,11 +75,15 @@ const createUser = asyncHandler(async (req, res) => {
 
 const updateUser = asyncHandler(async (req, res) => {
   const { id } = parseRequest(userIdParamsSchema, req.params);
-  const user = await userService.updateUser(
-    id,
-    parseRequest(updateUserSchema, req.body),
-    req.user._id
-  );
+  const updates = parseRequest(updateUserSchema, req.body);
+  const user = await userService.updateUser(id, updates, req.user._id);
+  await recordAuditForRequest(req, {
+    action: "user_updated",
+    entityType: "user",
+    entityId: user.id,
+    status: "success",
+    meta: updates
+  });
 
   sendResponse(res, 200, {
     success: true,
@@ -82,6 +98,15 @@ const updateUserStatus = asyncHandler(async (req, res) => {
   const { id } = parseRequest(userIdParamsSchema, req.params);
   const { status } = parseRequest(updateUserStatusSchema, req.body);
   const user = await userService.updateUserStatus(id, status, req.user._id);
+  await recordAuditForRequest(req, {
+    action: "user_status_updated",
+    entityType: "user",
+    entityId: user.id,
+    status: "success",
+    meta: {
+      status
+    }
+  });
 
   sendResponse(res, 200, {
     success: true,

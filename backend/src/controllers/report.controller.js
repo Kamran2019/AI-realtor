@@ -2,6 +2,7 @@ const { z } = require("zod");
 
 const { listQuerySchema } = require("../validators/property.validator");
 const csvExportService = require("../services/csvExport.service");
+const { recordAuditForRequest } = require("../services/auditLog.service");
 const reportService = require("../services/report.service");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
@@ -63,6 +64,15 @@ const generatePropertyReport = asyncHandler(async (req, res) => {
     propertyId,
     user: req.user
   });
+  await recordAuditForRequest(req, {
+    action: "report_generated",
+    entityType: "report",
+    entityId: report.id,
+    status: "success",
+    meta: {
+      propertyId
+    }
+  });
 
   sendResponse(res, 201, {
     success: true,
@@ -108,6 +118,16 @@ const downloadReport = asyncHandler(async (req, res) => {
   const file = await reportService.getReportFile({
     id,
     ownerUserId: req.user._id
+  });
+  await recordAuditForRequest(req, {
+    action: "report_shared",
+    entityType: "report",
+    entityId: id,
+    status: "success",
+    meta: {
+      mimeType: file.mimeType,
+      fileName: file.fileName
+    }
   });
 
   res

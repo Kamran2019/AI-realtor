@@ -1,4 +1,5 @@
 const express = require("express");
+const adminRoutes = require("./admin.routes");
 const alertRoutes = require("./alert.routes");
 const authRoutes = require("./auth.routes");
 const billingRoutes = require("./billing.routes");
@@ -16,6 +17,7 @@ const userRoutes = require("./user.routes");
 const router = express.Router();
 
 router.use("/alerts", alertRoutes);
+router.use("/admin", adminRoutes);
 router.use("/auth", authRoutes);
 router.use("/billing", billingRoutes);
 router.use("/bookmarks", bookmarkRoutes);
