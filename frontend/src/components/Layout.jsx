@@ -17,6 +17,7 @@ const Layout = ({ children }) => {
             <>
               <Link to="/dashboard">Dashboard</Link>
               <Link to="/properties">Properties</Link>
+              <Link to="/inspections">Inspections</Link>
               <Link to="/reports">Reports</Link>
               <Link to="/alerts">Alerts</Link>
               <UnreadBadge />

@@ -620,6 +620,337 @@ input[aria-invalid="true"] {
   font-size: 1.2rem;
 }
 
+.inspections-page,
+.inspection-form-page,
+.inspection-detail-page {
+  max-width: 960px;
+}
+
+.inspections-page h1,
+.inspection-form-page h1,
+.inspection-detail-page h1 {
+  font-size: clamp(2rem, 8vw, 3.25rem);
+}
+
+.inspection-filter-bar {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(150px, 180px) minmax(150px, 180px) auto;
+  gap: 12px;
+  align-items: end;
+  margin: 28px 0 18px;
+}
+
+.inspection-filter-bar label,
+.inspection-create-form label,
+.add-room-form label,
+.room-edit-form label,
+.manual-defect-form label {
+  display: grid;
+  gap: 8px;
+}
+
+.table-subtext {
+  display: block;
+  margin-top: 2px;
+  color: #60717f;
+  font-size: 0.85rem;
+}
+
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 9px;
+  border-radius: 999px;
+  background: #eef2f5;
+  color: #27323a;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: capitalize;
+  white-space: nowrap;
+}
+
+.status-draft {
+  background: #eef2f5;
+}
+
+.status-in_progress {
+  background: #d9edf7;
+  color: #0a4e68;
+}
+
+.status-completed,
+.severity-low {
+  background: #def2e7;
+  color: #157347;
+}
+
+.status-archived {
+  background: #ece4db;
+  color: #6f4e37;
+}
+
+.severity-high {
+  background: #f8d7da;
+  color: #b42318;
+}
+
+.severity-medium {
+  background: #fff3cd;
+  color: #8a5a00;
+}
+
+.inspection-create-form {
+  display: grid;
+  gap: 18px;
+  max-width: 720px;
+  margin-top: 28px;
+}
+
+.inspection-create-form fieldset {
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.inspection-create-form legend {
+  padding: 0 6px;
+  color: #172026;
+  font-weight: 900;
+}
+
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.inspection-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.severity-card.high strong {
+  color: #b42318;
+}
+
+.severity-card.medium strong {
+  color: #8a5a00;
+}
+
+.severity-card.low strong {
+  color: #157347;
+}
+
+.inspection-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+
+.inspection-meta-grid section,
+.add-room-form,
+.room-panel {
+  padding: 18px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.inspection-meta-grid h2,
+.add-room-form h2,
+.room-panel h2,
+.room-defects-section h3 {
+  margin: 0;
+  color: #172026;
+  font-size: 1.18rem;
+}
+
+.inspection-meta-grid dl {
+  display: grid;
+  gap: 8px;
+  margin: 14px 0 0;
+}
+
+.inspection-meta-grid dt {
+  color: #60717f;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.inspection-meta-grid dd {
+  margin: -6px 0 4px;
+  color: #27323a;
+}
+
+.status-form,
+.add-room-form {
+  display: grid;
+  gap: 12px;
+}
+
+.add-room-form {
+  margin-top: 24px;
+}
+
+.rooms-stack {
+  display: grid;
+  gap: 18px;
+  margin-top: 24px;
+}
+
+.room-panel {
+  display: grid;
+  gap: 20px;
+}
+
+.room-panel-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.room-panel-header p,
+.defect-notes,
+.empty-state {
+  margin: 6px 0 0;
+  font-size: 0.95rem;
+}
+
+.room-edit-form {
+  display: grid;
+  width: 100%;
+  gap: 12px;
+}
+
+.camera-capture {
+  display: inline-grid;
+  gap: 8px;
+  max-width: 280px;
+  padding: 12px;
+  border: 1px dashed #8aa0af;
+  border-radius: 6px;
+  background: #f7f8fa;
+}
+
+.camera-capture span {
+  color: #27323a;
+  font-size: 0.94rem;
+  font-weight: 900;
+}
+
+.room-media-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.room-media-grid img,
+.defect-thumb {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: 6px;
+  object-fit: cover;
+  background: #eef2f5;
+}
+
+.room-defects-section {
+  display: grid;
+  gap: 14px;
+}
+
+.manual-defect-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  background: #f7f8fa;
+}
+
+.manual-defect-form .wide-field {
+  grid-column: 1 / -1;
+}
+
+.defect-box-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.defect-list {
+  display: grid;
+  gap: 12px;
+}
+
+.defect-item {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.defect-item-header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.defect-item-header > div:first-child {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.defect-thumb {
+  max-width: 180px;
+}
+
+@media (max-width: 760px) {
+  .site-header,
+  .site-nav,
+  .admin-page-header,
+  .room-panel-header,
+  .defect-item-header {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .site-nav {
+    width: 100%;
+    gap: 10px;
+  }
+
+  .inspection-filter-bar,
+  .filter-bar,
+  .inspection-summary-grid,
+  .inspection-meta-grid,
+  .manual-defect-form,
+  .defect-box-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-grid,
+  .admin-metric-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .source-form label {
   display: grid;
   gap: 8px;

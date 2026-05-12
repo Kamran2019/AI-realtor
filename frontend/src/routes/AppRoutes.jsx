@@ -15,6 +15,9 @@ import ResetPasswordPage from "../pages/auth/ResetPasswordPage.jsx";
 import SignupPage from "../pages/auth/SignupPage.jsx";
 import VerifyEmailPage from "../pages/auth/VerifyEmailPage.jsx";
 import BillingPage from "../pages/billing/BillingPage.jsx";
+import InspectionCreatePage from "../pages/inspections/InspectionCreatePage.jsx";
+import InspectionDetailPage from "../pages/inspections/InspectionDetailPage.jsx";
+import InspectionListPage from "../pages/inspections/InspectionListPage.jsx";
 import NotificationsPage from "../pages/notifications/NotificationsPage.jsx";
 import PropertyDetailPage from "../pages/properties/PropertyDetailPage.jsx";
 import PropertyListPage from "../pages/properties/PropertyListPage.jsx";
@@ -66,6 +69,30 @@ const AppRoutes = () => (
       element={
         <ProtectedRoute>
           <ReportsPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/inspections"
+      element={
+        <ProtectedRoute>
+          <InspectionListPage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/inspections/create"
+      element={
+        <ProtectedRoute>
+          <InspectionCreatePage />
+        </ProtectedRoute>
+      }
+    />
+    <Route
+      path="/inspections/:id"
+      element={
+        <ProtectedRoute>
+          <InspectionDetailPage />
         </ProtectedRoute>
       }
     />
