@@ -39,7 +39,7 @@ const envSchema = z.object({
   STRIPE_PRO_YEARLY_PRICE_ID: z.string().trim().min(1).optional(),
   STRIPE_ENTERPRISE_MONTHLY_PRICE_ID: z.string().trim().min(1).optional(),
   STRIPE_ENTERPRISE_YEARLY_PRICE_ID: z.string().trim().min(1).optional(),
-  AI_PROVIDER: z.preprocess(emptyStringToDefault("stub"), z.string().trim().min(1)),
+  AI_PROVIDER: z.preprocess(emptyStringToDefault("stub"), z.enum(["stub", "http"])),
   AI_SERVICE_URL: z.preprocess(emptyStringToDefault("http://localhost:8000"), z.string().url()),
   AI_DETECTION_TIMEOUT_MS: z.preprocess(
     emptyStringToDefault("30000"),

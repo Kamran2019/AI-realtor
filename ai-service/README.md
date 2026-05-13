@@ -1,7 +1,7 @@
 # AI Realtor Defect Detection Service
 
 Standalone FastAPI microservice foundation for future AI property defect detection.
-This phase uses a deterministic stub provider only; it does not run YOLO inference and is not wired into the MERN backend yet.
+This phase uses a deterministic stub provider only; it does not run YOLO inference.
 
 ## Setup
 
@@ -18,6 +18,18 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
 The service runs at `http://localhost:8000`.
+
+## MERN Backend Integration
+
+The MERN backend can call this service through its AI provider router. Start this service, then set the backend environment to:
+
+```env
+AI_PROVIDER=http
+AI_SERVICE_URL=http://localhost:8000
+AI_DETECTION_TIMEOUT_MS=30000
+```
+
+The React frontend continues to call the MERN endpoint; it should not call this FastAPI service directly.
 
 ## Test
 

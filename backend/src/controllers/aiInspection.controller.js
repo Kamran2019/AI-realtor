@@ -56,9 +56,7 @@ const runImageDetection = asyncHandler(async (req, res) => {
     roomId
   });
 
-  detectionResult.detections.forEach((defect) => {
-    room.defects.push(defect);
-  });
+  room.defects.push(...detectionResult.detections);
 
   inspectionService.recalculateInspectionSummary(inspection);
   await inspection.save();
