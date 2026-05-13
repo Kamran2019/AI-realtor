@@ -443,6 +443,7 @@ module.exports = {
   changeInspectionStatus,
   deleteDefect,
   deleteInspection,
+  getAccessibleInspectionDocument,
   getInspectionById,
   listInspections,
   recalculateInspectionSummary,

@@ -168,6 +168,14 @@ const InspectionDetailPage = () => {
       setInspectionFromResponse(response);
     }, "Manual defect could not be deleted.");
 
+  const handleAIDetectionComplete = (result) => {
+    if (result.inspection) {
+      setInspection(result.inspection);
+    }
+
+    setStatusMessage("AI detection completed.");
+  };
+
   const handleStatusSubmit = (event) => {
     event.preventDefault();
 
@@ -299,6 +307,7 @@ const InspectionDetailPage = () => {
               isSubmitting={isSubmitting}
               key={room.id || room._id}
               onAddDefect={handleAddDefect}
+              onAIDetectionComplete={handleAIDetectionComplete}
               onDeleteDefect={handleDeleteDefect}
               onImageUpload={handleImageUpload}
               onUpdateDefect={handleUpdateDefect}

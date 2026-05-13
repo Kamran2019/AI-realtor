@@ -850,18 +850,87 @@ input[aria-invalid="true"] {
 
 .room-media-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 14px;
   margin-top: 14px;
 }
 
-.room-media-grid img,
+.room-media-item {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.room-media-item > img,
 .defect-thumb {
   width: 100%;
   aspect-ratio: 4 / 3;
   border-radius: 6px;
   object-fit: cover;
   background: #eef2f5;
+}
+
+.ai-detect-control {
+  display: grid;
+  gap: 8px;
+}
+
+.ai-detect-control .secondary-button {
+  width: 100%;
+}
+
+.ai-result-panel {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid #dde3ea;
+  border-radius: 6px;
+  background: #f7f8fa;
+}
+
+.ai-result-panel dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.ai-result-panel dt,
+.image-defect-links strong {
+  color: #60717f;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.ai-result-panel dd {
+  margin: 0;
+  color: #172026;
+  font-size: 0.88rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.ai-result-panel p {
+  margin: 0;
+  font-size: 0.86rem;
+}
+
+.image-defect-links {
+  display: grid;
+  gap: 6px;
+}
+
+.image-defect-links ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 18px;
+  color: #40515f;
+  font-size: 0.88rem;
 }
 
 .room-defects-section {
@@ -919,6 +988,15 @@ input[aria-invalid="true"] {
 
 .defect-thumb {
   max-width: 180px;
+}
+
+.defect-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: #60717f;
+  font-size: 0.85rem;
+  font-weight: 800;
 }
 
 @media (max-width: 760px) {

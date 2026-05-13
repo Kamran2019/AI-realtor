@@ -16,6 +16,20 @@ const typeLabels = {
   water_seepage: "Water seepage"
 };
 
+const sourceLabels = {
+  ai_microservice: "AI microservice",
+  ai_stub: "AI stub",
+  manual: "Manual"
+};
+
+const formatConfidence = (confidence) => {
+  if (typeof confidence !== "number") {
+    return null;
+  }
+
+  return `${Math.round(confidence * 100)}% confidence`;
+};
+
 const DefectList = ({ defects = [], isSubmitting = false, mediaUrls = [], onDelete, onUpdate }) => {
   const [editingDefectId, setEditingDefectId] = useState(null);
 
@@ -68,6 +82,11 @@ const DefectList = ({ defects = [], isSubmitting = false, mediaUrls = [], onDele
               {defect.imageUrl ? (
                 <img alt="" className="defect-thumb" src={getAssetUrl(defect.imageUrl)} />
               ) : null}
+              <div className="defect-meta-row">
+                <span>{sourceLabels[defect.source] || defect.source || "Manual"}</span>
+                {formatConfidence(defect.confidence) ? <span>{formatConfidence(defect.confidence)}</span> : null}
+                {defect.modelVersion ? <span>{defect.modelVersion}</span> : null}
+              </div>
               {defect.notes ? <p className="defect-notes">{defect.notes}</p> : null}
             </>
           )}

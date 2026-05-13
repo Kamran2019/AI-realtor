@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import InspectionCreatePage from "../pages/inspections/InspectionCreatePage.jsx";
 import InspectionDetailPage from "../pages/inspections/InspectionDetailPage.jsx";
 import InspectionListPage from "../pages/inspections/InspectionListPage.jsx";
+import { runImageDetection } from "../services/aiInspectionApi.js";
 import {
   addInspectionRoom,
   addManualDefect,
@@ -43,6 +44,10 @@ vi.mock("../services/inspectionApi.js", () => ({
   updateInspectionRoom: vi.fn(),
   updateManualDefect: vi.fn(),
   uploadInspectionRoomImage: vi.fn()
+}));
+
+vi.mock("../services/aiInspectionApi.js", () => ({
+  runImageDetection: vi.fn()
 }));
 
 vi.mock("../services/userApi.js", () => ({
@@ -114,6 +119,29 @@ const inspectionResponse = (nextInspection = inspection) => ({
   }
 });
 
+const aiDetectionResponse = (nextInspection) => ({
+  data: {
+    data: {
+      defects: [
+        {
+          confidence: 0.78,
+          id: "ai-defect-1",
+          imageUrl: "/uploads/inspections/inspection-1.png",
+          modelVersion: "defect-stub-v1",
+          notes: "Stub detection: possible crack-like defect.",
+          severity: "medium",
+          source: "ai_stub",
+          type: "crack"
+        }
+      ],
+      inspection: nextInspection,
+      modelVersion: "defect-stub-v1",
+      provider: "stub",
+      summary: nextInspection.summary
+    }
+  }
+});
+
 beforeEach(() => {
   vi.clearAllMocks();
   mockAuth.user = {
@@ -123,6 +151,7 @@ beforeEach(() => {
   };
   listInspections.mockResolvedValue(listResponse);
   listUsers.mockResolvedValue({ data: { data: { users: [] } } });
+  runImageDetection.mockReset();
 });
 
 describe("inspection frontend pages", () => {
@@ -221,5 +250,59 @@ describe("inspection frontend pages", () => {
         status: "in_progress"
       });
     });
+  });
+
+  it("runs AI detection for a room image and refreshes the inspection", async () => {
+    const aiDefect = {
+      confidence: 0.78,
+      id: "ai-defect-1",
+      imageUrl: "/uploads/inspections/inspection-1.png",
+      modelVersion: "defect-stub-v1",
+      notes: "Stub detection: possible crack-like defect.",
+      severity: "medium",
+      source: "ai_stub",
+      type: "crack"
+    };
+    const nextInspection = {
+      ...inspection,
+      rooms: [
+        {
+          ...inspection.rooms[0],
+          defects: [...inspection.rooms[0].defects, aiDefect]
+        }
+      ],
+      summary: {
+        high: 1,
+        low: 0,
+        medium: 1,
+        totalDefects: 2
+      }
+    };
+
+    getInspection.mockResolvedValue(inspectionResponse());
+    runImageDetection.mockResolvedValue(aiDetectionResponse(nextInspection));
+
+    render(
+      <MemoryRouter initialEntries={["/inspections/inspection-1"]}>
+        <Routes>
+          <Route path="/inspections/:id" element={<InspectionDetailPage />} />
+        </Routes>
+      </MemoryRouter>
+    );
+
+    fireEvent.click(await screen.findByRole("button", { name: "Run AI Detection" }));
+
+    await waitFor(() => {
+      expect(runImageDetection).toHaveBeenCalledWith({
+        imageIndex: 0,
+        inspectionId: "inspection-1",
+        roomId: "room-1"
+      });
+    });
+
+    expect(await screen.findByText("AI suggestions must be reviewed by a human.")).toBeInTheDocument();
+    expect(screen.getByText("AI detection completed.")).toBeInTheDocument();
+    expect(await screen.findByText("AI stub")).toBeInTheDocument();
+    expect(screen.getAllByText("defect-stub-v1").length).toBeGreaterThanOrEqual(1);
   });
 });

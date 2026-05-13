@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { getAssetUrl } from "../../services/apiClient.js";
+import AIDetectButton from "./AIDetectButton.jsx";
 import CameraCapture from "./CameraCapture.jsx";
 import DefectList from "./DefectList.jsx";
 import ManualDefectForm from "./ManualDefectForm.jsx";
@@ -8,6 +9,7 @@ const RoomCapturePanel = ({
   inspectionId,
   isSubmitting = false,
   onAddDefect,
+  onAIDetectionComplete,
   onDeleteDefect,
   onImageUpload,
   onUpdateDefect,
@@ -21,6 +23,10 @@ const RoomCapturePanel = ({
   });
 
   const roomId = room.id || room._id;
+  const defects = room.defects || [];
+
+  const getDefectsForImage = (imageUrl) =>
+    defects.filter((defect) => defect.imageUrl === imageUrl);
 
   const handleRoomChange = (event) => {
     const { name, value } = event.target;
@@ -96,7 +102,30 @@ const RoomCapturePanel = ({
         {room.mediaUrls?.length ? (
           <div className="room-media-grid">
             {room.mediaUrls.map((url, index) => (
-              <img alt="" key={url} src={getAssetUrl(url)} title={`Room image ${index + 1}`} />
+              <article className="room-media-item" key={`${url}-${index}`}>
+                <img alt="" src={getAssetUrl(url)} title={`Room image ${index + 1}`} />
+                <AIDetectButton
+                  disabled={isSubmitting}
+                  imageIndex={index}
+                  inspectionId={inspectionId}
+                  onDetectionComplete={onAIDetectionComplete}
+                  roomId={roomId}
+                />
+                <div className="image-defect-links">
+                  <strong>Linked defects</strong>
+                  {getDefectsForImage(url).length ? (
+                    <ul>
+                      {getDefectsForImage(url).map((defect) => (
+                        <li key={defect.id || defect._id}>
+                          {defect.type} - {defect.severity}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="empty-state">No linked defects.</p>
+                  )}
+                </div>
+              </article>
             ))}
           </div>
         ) : (
@@ -105,14 +134,14 @@ const RoomCapturePanel = ({
       </div>
 
       <div className="room-defects-section">
-        <h3>Manual defects</h3>
+        <h3>Defects</h3>
         <ManualDefectForm
           isSubmitting={isSubmitting}
           mediaUrls={room.mediaUrls || []}
           onSubmit={(payload) => onAddDefect(roomId, payload)}
         />
         <DefectList
-          defects={room.defects || []}
+          defects={defects}
           isSubmitting={isSubmitting}
           mediaUrls={room.mediaUrls || []}
           onDelete={(defectId) => onDeleteDefect(roomId, defectId)}
