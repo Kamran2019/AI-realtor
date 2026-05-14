@@ -1,0 +1,15 @@
+path: datasets/defects
+train: images/train
+val: images/val
+test: images/test
+
+names:
+  0: crack
+  1: damp
+  2: mould
+  3: peeling_paint
+  4: water_seepage
+  5: stain
+  6: wall_hole
+  7: tile_damage
+  8: poor_finish

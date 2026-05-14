@@ -3,7 +3,17 @@ from typing import Literal
 from pydantic import AnyHttpUrl, BaseModel, Field
 
 
-DefectType = Literal["crack", "damp", "mould", "poor_finish"]
+DefectType = Literal[
+    "crack",
+    "damp",
+    "mould",
+    "peeling_paint",
+    "water_seepage",
+    "stain",
+    "wall_hole",
+    "tile_damage",
+    "poor_finish",
+]
 Severity = Literal["low", "medium", "high"]
 
 
@@ -15,10 +25,10 @@ class DetectionRequest(BaseModel):
 
 
 class Box(BaseModel):
-    x: float
-    y: float
-    w: float
-    h: float
+    x: float = Field(ge=0)
+    y: float = Field(ge=0)
+    w: float = Field(ge=0)
+    h: float = Field(ge=0)
 
 
 class Detection(BaseModel):
