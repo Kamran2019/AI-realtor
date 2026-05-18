@@ -1,8 +1,16 @@
 node_modules/
+venv/
+.venv/
 dist/
 coverage/
+runs/
+dataset/
 backend/.cache/
 backend/uploads/
+ai-service/runs/
+ai-service/Ultralytics/
+ai-service/app/models/*.pt
+yolov8*.pt
 .env
 .env.local
 .env.*.local
