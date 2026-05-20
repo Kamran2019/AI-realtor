@@ -3,10 +3,19 @@ const { z } = require("zod");
 
 dotenv.config();
 
+const emptyStringToUndefined = (value) => (value === "" ? undefined : value);
+
+const emptyStringToDefault = (defaultValue) => (value) =>
+  value === "" || value === undefined ? defaultValue : value;
+
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]),
   PORT: z.coerce.number().int().positive(),
   MONGO_URI: z.string().trim().min(1),
+  MONGO_DNS_SERVERS: z.preprocess(
+    emptyStringToUndefined,
+    z.string().trim().min(1).optional()
+  ),
   CLIENT_URL: z.string().url(),
   APP_BASE_URL: z.string().url().optional(),
   JWT_ACCESS_SECRET: z.string().trim().min(32),
@@ -16,15 +25,26 @@ const envSchema = z.object({
   COOKIE_SECURE: z
     .enum(["true", "false"])
     .transform((value) => value === "true"),
-  SMTP_HOST: z.string().trim().min(1).optional(),
-  SMTP_PORT: z.coerce.number().int().positive().optional(),
-  SMTP_SECURE: z
-    .enum(["true", "false"])
-    .default("false")
-    .transform((value) => value === "true"),
-  SMTP_USER: z.string().optional(),
-  SMTP_PASS: z.string().optional(),
-  SMTP_FROM: z.string().trim().min(1).optional()
+  BREVO_API_KEY: z.preprocess(emptyStringToUndefined, z.string().trim().min(1).optional()),
+  BREVO_SENDER_EMAIL: z.preprocess(
+    emptyStringToUndefined,
+    z.string().trim().email().optional()
+  ),
+  BREVO_SENDER_NAME: z.preprocess(emptyStringToUndefined, z.string().trim().min(1).optional()),
+  STRIPE_SECRET_KEY: z.string().trim().min(1).optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().trim().min(1).optional(),
+  STRIPE_STARTER_MONTHLY_PRICE_ID: z.string().trim().min(1).optional(),
+  STRIPE_STARTER_YEARLY_PRICE_ID: z.string().trim().min(1).optional(),
+  STRIPE_PRO_MONTHLY_PRICE_ID: z.string().trim().min(1).optional(),
+  STRIPE_PRO_YEARLY_PRICE_ID: z.string().trim().min(1).optional(),
+  STRIPE_ENTERPRISE_MONTHLY_PRICE_ID: z.string().trim().min(1).optional(),
+  STRIPE_ENTERPRISE_YEARLY_PRICE_ID: z.string().trim().min(1).optional(),
+  AI_PROVIDER: z.preprocess(emptyStringToDefault("stub"), z.enum(["stub", "http"])),
+  AI_SERVICE_URL: z.preprocess(emptyStringToDefault("http://localhost:8000"), z.string().url()),
+  AI_DETECTION_TIMEOUT_MS: z.preprocess(
+    emptyStringToDefault("30000"),
+    z.coerce.number().int().positive()
+  )
 });
 
 const parsedEnv = envSchema.safeParse(process.env);

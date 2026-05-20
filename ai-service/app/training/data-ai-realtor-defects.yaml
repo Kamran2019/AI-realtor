@@ -1,0 +1,12 @@
+path: E:/projects/AI-realtor/dataset/ai-realtor-defects.v1i.yolov8
+train: train/images
+val: valid/images
+test: test/images
+
+names:
+  0: corrosion
+  1: crack
+  2: mould
+  3: peeling_paint
+  4: spalling
+  5: water_seepage

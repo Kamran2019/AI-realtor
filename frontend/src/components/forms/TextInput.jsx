@@ -2,6 +2,7 @@ import FormError from "../ui/FormError.jsx";
 
 const TextInput = ({
   autoComplete,
+  disabled = false,
   error,
   id,
   label,
@@ -16,6 +17,7 @@ const TextInput = ({
       aria-describedby={error ? `${id}-error` : undefined}
       aria-invalid={Boolean(error)}
       autoComplete={autoComplete}
+      disabled={disabled}
       id={id}
       name={name}
       onChange={onChange}

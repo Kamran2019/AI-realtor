@@ -8,6 +8,7 @@ const {
   verifyEmailSchema
 } = require("../validators/auth.validator");
 const authService = require("../services/auth.service");
+const { recordAuditForRequest } = require("../services/auditLog.service");
 const ApiError = require("../utils/ApiError");
 const asyncHandler = require("../utils/asyncHandler");
 const sendResponse = require("../utils/sendResponse");
@@ -83,20 +84,44 @@ const signup = asyncHandler(async (req, res) => {
 });
 
 const login = asyncHandler(async (req, res) => {
-  const { accessToken, refreshToken, user } = await authService.login(
-    parseRequestBody(loginSchema, req.body)
-  );
+  const credentials = parseRequestBody(loginSchema, req.body);
 
-  setRefreshCookie(res, refreshToken);
+  try {
+    const { accessToken, refreshToken, user } = await authService.login(credentials);
 
-  sendResponse(res, 200, {
-    success: true,
-    message: "Logged in successfully.",
-    data: {
-      accessToken,
-      user
-    }
-  });
+    await recordAuditForRequest(req, {
+      action: "auth_login",
+      actorRole: user.role,
+      actorUserId: user.id,
+      entityType: "user",
+      entityId: user.id,
+      status: "success",
+      meta: {
+        email: user.email
+      }
+    });
+
+    setRefreshCookie(res, refreshToken);
+
+    sendResponse(res, 200, {
+      success: true,
+      message: "Logged in successfully.",
+      data: {
+        accessToken,
+        user
+      }
+    });
+  } catch (error) {
+    await recordAuditForRequest(req, {
+      action: "auth_login",
+      status: "failure",
+      meta: {
+        email: credentials.email
+      }
+    });
+
+    throw error;
+  }
 });
 
 const resendVerification = asyncHandler(async (req, res) => {

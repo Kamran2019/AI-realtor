@@ -10,4 +10,6 @@ process.env.JWT_REFRESH_SECRET =
 process.env.ACCESS_TOKEN_EXPIRES_IN = process.env.ACCESS_TOKEN_EXPIRES_IN || "15m";
 process.env.REFRESH_TOKEN_EXPIRES_IN = process.env.REFRESH_TOKEN_EXPIRES_IN || "7d";
 process.env.COOKIE_SECURE = process.env.COOKIE_SECURE || "false";
-process.env.SMTP_SECURE = process.env.SMTP_SECURE || "false";
+process.env.BREVO_API_KEY = process.env.BREVO_API_KEY || "test-brevo-api-key";
+process.env.BREVO_SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL || "no-reply@example.com";
+process.env.BREVO_SENDER_NAME = process.env.BREVO_SENDER_NAME || "AI Realtor";

@@ -4,12 +4,14 @@ const cors = require("cors");
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 const helmet = require("helmet");
+const path = require("path");
 
 const env = require("./config/env");
 const errorMiddleware = require("./middlewares/error.middleware");
 const notFoundMiddleware = require("./middlewares/notFound.middleware");
 const requestLogger = require("./middlewares/requestLogger.middleware");
 const routes = require("./routes");
+const { webhookRouter: billingWebhookRouter } = require("./routes/billing.routes");
 
 const app = express();
 
@@ -22,8 +24,6 @@ app.use(
 );
 app.use(compression());
 app.use(cookieParser());
-app.use(express.json({ limit: "2mb" }));
-app.use(express.urlencoded({ extended: true }));
 app.use(
   rateLimit({
     windowMs: 15 * 60 * 1000,
@@ -33,6 +33,17 @@ app.use(
   })
 );
 app.use(requestLogger);
+app.use("/api/billing/webhook", express.raw({ type: "application/json" }), billingWebhookRouter);
+app.use(express.json({ limit: "2mb" }));
+app.use(express.urlencoded({ extended: true }));
+app.use(
+  "/uploads",
+  express.static(path.join(process.cwd(), "uploads"), {
+    setHeaders(res) {
+      res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+    }
+  })
+);
 app.use("/api", routes);
 app.use(notFoundMiddleware);
 app.use(errorMiddleware);

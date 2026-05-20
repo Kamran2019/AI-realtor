@@ -5,6 +5,18 @@ const apiClient = axios.create({
   withCredentials: true
 });
 
+export const getAssetUrl = (url) => {
+  if (!url) {
+    return "";
+  }
+
+  if (/^https?:\/\//i.test(url)) {
+    return url;
+  }
+
+  return `${apiClient.defaults.baseURL.replace(/\/api\/?$/, "")}${url}`;
+};
+
 let getAccessToken = () => null;
 let refreshAccessToken = null;
 
